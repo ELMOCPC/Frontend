@@ -11,121 +11,87 @@ import {
   MapPin,
   Mail,
   Zap,
+  ChevronDown,
 } from "lucide-react";
 import Footer from "@/components/Custom/Footer.tsx";
 
 function BootcampDetails() {
   const [selectedDay, setSelectedDay] = useState(0);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   const instructors = [
     {
       name: "دکتر محمد رضایی",
-      role: "مدرس بخش الگوریتم‌ها",
+      role: "مدرس الگوریتم‌ها",
       expertise: "الگوریتم‌های پیشرفته و تئوری گراف",
       image: "👨‍🏫",
+      color: "from-blue-500 to-cyan-500",
     },
     {
       name: "مهندس علی احمدی",
-      role: "مدرس بخش ساختمان‌های داده",
+      role: "مدرس ساختمان‌های داده",
       expertise: "ساختمان‌های داده و بهینه‌سازی",
       image: "👨‍💼",
+      color: "from-purple-500 to-pink-500",
     },
     {
       name: "دکتر زهرا موسوی",
-      role: "مدرس بخش رقابت عملی",
+      role: "مدرس رقابت عملی",
       expertise: "استراتژی رقابتی و حل مسائل",
       image: "👩‍🏫",
+      color: "from-green-500 to-emerald-500",
     },
     {
       name: "مهندس کمال یزدی",
       role: "دستیار آموزشی",
       expertise: "پشتیبانی فنی و راهنمایی",
       image: "👨‍💻",
+      color: "from-amber-500 to-orange-500",
     },
   ];
 
   const schedule = [
     {
       day: "روز اول",
-      date: "15 اسفند 1404",
+      date: "6 آذر 1404",
       time: "09:00 - 15:00",
+      theme: "مبانی",
       sessions: [
-        {
-          time: "09:00 - 10:30",
-          title: "مرحب و معرفی (پرتو: دکتر رضایی)",
-          type: "introduction",
-        },
-        {
-          time: "10:45 - 12:15",
-          title: "مبانی الگوریتم‌ها (پرتو: دکتر رضایی)",
-          type: "lecture",
-        },
-        {
-          time: "13:00 - 15:00",
-          title: "تمرین عملی و حل مسائل",
-          type: "practice",
-        },
+        { title: "مسئله‌ی کوتاه‌ترین مسیر در جدول" },
+        { title: "مبانی الگوریتم‌ها (پرتو: دکتر رضایی)" },
+        { title: "تمرین عملی و حل مسائل" },
       ],
     },
     {
       day: "روز دوم",
       date: "16 اسفند 1404",
       time: "09:00 - 15:00",
+      theme: "ساختمان‌ها",
       sessions: [
-        {
-          time: "09:00 - 10:30",
-          title: "ساختمان‌های داده پایه (پرتو: مهندس احمدی)",
-          type: "lecture",
-        },
-        {
-          time: "10:45 - 12:15",
-          title: "درخت‌ها و گراف (پرتو: مهندس احمدی)",
-          type: "lecture",
-        },
-        {
-          time: "13:00 - 15:00",
-          title: "تمرین‌های عملی پیشرفته",
-          type: "practice",
-        },
+        { title: "ساختمان‌های داده پایه (پرتو: مهندس احمدی)" },
+        { title: "درخت‌ها و گراف (پرتو: مهندس احمدی)" },
+        { title: "تمرین‌های عملی پیشرفته" },
       ],
     },
     {
       day: "روز سوم",
       date: "17 اسفند 1404",
       time: "09:00 - 15:00",
+      theme: "الگوریتم",
       sessions: [
-        {
-          time: "09:00 - 10:30",
-          title: "برنامه‌ریزی پویا (پرتو: دکتر رضایی)",
-          type: "lecture",
-        },
-        {
-          time: "10:45 - 12:15",
-          title: "الگوریتم‌های گراف (پرتو: دکتر رضایی)",
-          type: "lecture",
-        },
-        {
-          time: "13:00 - 15:00",
-          title: "کارگاه عملی و مسائل چالشی",
-          type: "workshop",
-        },
+        { title: "برنامه‌ریزی پویا (پرتو: دکتر رضایی)" },
+        { title: "الگوریتم‌های گراف (پرتو: دکتر رضایی)" },
+        { title: "کارگاه عملی و مسائل چالشی" },
       ],
     },
     {
       day: "روز چهارم",
       date: "18 اسفند 1404",
       time: "09:00 - 17:00",
+      theme: "نهایی",
       sessions: [
-        {
-          time: "09:00 - 10:30",
-          title: "مرور و نکات حیاتی (پرتو: دکتر زهرا)",
-          type: "review",
-        },
-        {
-          time: "10:45 - 17:00",
-          title: "مسابقه تیمی و ارزیابی نهایی",
-          type: "competition",
-        },
+        { title: "مرور و نکات حیاتی (پرتو: دکتر زهرا)" },
+        { title: "مسابقه تیمی و ارزیابی نهایی" },
       ],
     },
   ];
@@ -139,50 +105,30 @@ function BootcampDetails() {
     "پشتیبانی و راهنمایی فنی مداوم",
   ];
 
-  const getSessionColor = (type) => {
-    switch (type) {
-      case "introduction":
-        return "from-blue-500 to-cyan-500";
-      case "lecture":
-        return "from-purple-500 to-pink-500";
-      case "practice":
-        return "from-amber-500 to-orange-500";
-      case "workshop":
-        return "from-green-500 to-emerald-500";
-      case "review":
-        return "from-red-500 to-pink-500";
-      case "competition":
-        return "from-yellow-500 to-orange-500";
-      default:
-        return "from-gray-500 to-gray-600";
-    }
-  };
-
-  const getSessionLabel = (type) => {
-    switch (type) {
-      case "introduction":
-        return "مقدمه";
-      case "lecture":
-        return "سخنرانی";
-      case "practice":
-        return "تمرین";
-      case "workshop":
-        return "کارگاه";
-      case "review":
-        return "مرور";
-      case "competition":
-        return "مسابقه";
-      default:
-        return "سایر";
-    }
-  };
+  const faqs = [
+    {
+      q: "آیا نیاز به دانش قبلی دارد؟",
+      a: "خیر، برنامه برای تمام سطوح طراحی شده است. اگر مبتدی هستید، مدرسین راهنمایی کافی ارائه خواهند داد.",
+    },
+    {
+      q: "آیا این بوت کمپ برای مسابقه ICPC کافی است؟",
+      a: "این بوت کمپ یک بنیاد قوی فراهم می‌کند. برای تسلط کامل، تمرین مداوم بعد از بوت کمپ ضروری است.",
+    },
+    {
+      q: "آیا فیلم‌های جلسات نگهداری می‌شوند؟",
+      a: "بله، تمام جلسات ضبط شده و شرکت‌کنندگان به مدت 3 ماه دسترسی خواهند داشت.",
+    },
+    {
+      q: "چگونه می‌توانم تماس بگیرم؟",
+      a: "می‌توانید از طریق ایمیل info@icpc.com یا فرم تماس در سایت با ما ارتباط برقرار کنید.",
+    },
+  ];
 
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-[#00274D] via-[#003D6B] to-[#00274D] text-white"
       dir="rtl"
     >
-      {/* Header with Back Button */}
       <div className="sticky top-0 z-40 bg-[#00274D]/95 backdrop-blur-lg border-b border-white/10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <a
@@ -194,38 +140,34 @@ function BootcampDetails() {
           </a>
           <h1 className="text-2xl font-bold">
             <span className="text-[#FFD500]">بوت کمپ</span>
-            <span className="text-white"> فشرده 4 روزه</span>
+            <span className="text-white"> 4 روزه</span>
           </h1>
           <div className="w-10" />
         </div>
       </div>
 
-      {/* Hero Section */}
-      <div className="py-16 bg-gradient-to-b from-[#003D6B]/50 to-transparent">
+      <div className="py-20 bg-gradient-to-b from-[#003D6B]/50 to-transparent">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6 px-4 py-2 bg-[#FFD500]/20 rounded-full border border-[#FFD500]/50">
-              <span className="text-[#FFD500] font-semibold">
-                🚀 برنامه آموزشی فشرده
-              </span>
+              <span className="text-[#FFD500] font-semibold">🚀 برنامه آموزشی فشرده</span>
             </div>
-            <h2 className="text-5xl font-bold mb-6">
+            <h2 className="text-6xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-white via-[#FFD500] to-white bg-clip-text text-transparent">
               آماده‌سازی کامل برای ICPC 2025
             </h2>
-            <p className="text-xl text-gray-300 mb-8">
-              یک برنامه آموزشی جامع و عملی برای تسلط بر مهارت‌های برنامه‌نویسی
-              رقابتی
+            <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+              یک برنامه آموزشی جامع و عملی برای تسلط بر مهارت‌های برنامه‌نویسی رقابتی
             </p>
             <div className="flex justify-center gap-8 flex-wrap text-sm">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/10">
                 <Calendar className="w-5 h-5 text-[#FFD500]" />
                 <span>15-18 اسفند 1404</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/10">
                 <Clock className="w-5 h-5 text-[#46BEF6]" />
                 <span>24 ساعت آموزش</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/10">
                 <Users className="w-5 h-5 text-[#D7263D]" />
                 <span>محدود به 100 نفر</span>
               </div>
@@ -234,49 +176,49 @@ function BootcampDetails() {
         </div>
       </div>
 
-      {/* Instructors Section */}
-      <div className="py-20 container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h3 className="text-4xl font-bold mb-4">مدرسین برجسته</h3>
-          <p className="text-gray-300">
-            متخصصانی با تجربه گسترده در برنامه‌نویسی رقابتی
-          </p>
+      <div className="py-24 container mx-auto px-4">
+        <div className="text-center mb-20">
+          <h3 className="text-5xl font-bold mb-6">مدرسین برجسته</h3>
+          <div className="h-1 w-24 bg-gradient-to-r from-[#FFD500] to-[#46BEF6] mx-auto"></div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {instructors.map((instructor, index) => (
             <div
               key={index}
-              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105 text-center"
+              className="group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:scale-110 hover:shadow-2xl"
             >
-              <div className="text-6xl mb-4">{instructor.image}</div>
-              <h4 className="text-xl font-bold mb-2">{instructor.name}</h4>
-              <p className="text-[#FFD500] text-sm font-semibold mb-2">
-                {instructor.role}
-              </p>
-              <p className="text-gray-400 text-sm">{instructor.expertise}</p>
+              <div className={`absolute inset-0 bg-gradient-to-br ${instructor.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}></div>
+              <div className="relative z-10">
+                <div className="text-7xl mb-4 transform group-hover:scale-125 transition-transform duration-300">
+                  {instructor.image}
+                </div>
+                <h4 className="text-xl font-bold mb-2">{instructor.name}</h4>
+                <p className={`text-sm font-semibold mb-3 bg-gradient-to-r ${instructor.color} bg-clip-text text-transparent`}>
+                  {instructor.role}
+                </p>
+                <p className="text-gray-400 text-sm leading-relaxed">{instructor.expertise}</p>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Schedule Section */}
-      <div className="py-20 bg-black/20 backdrop-blur-sm">
+      <div className="py-24 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold mb-4">جدول برنامه</h3>
-            <p className="text-gray-300">برنامه تفصیلی هر روز آموزش</p>
+          <div className="text-center mb-20">
+            <h3 className="text-5xl font-bold mb-6">جدول برنامه آموزشی</h3>
+            <div className="h-1 w-24 bg-gradient-to-r from-[#FFD500] to-[#46BEF6] mx-auto"></div>
           </div>
 
-          {/* Day Selector */}
-          <div className="flex justify-center gap-4 mb-8 flex-wrap">
+          <div className="flex justify-center gap-4 mb-12 flex-wrap">
             {schedule.map((item, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedDay(index)}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
                   selectedDay === index
-                    ? "bg-[#FFD500] text-[#00274D] shadow-lg shadow-[#FFD500]/50"
+                    ? "bg-[#FFD500] text-[#00274D] shadow-2xl shadow-[#FFD500]/50 scale-105"
                     : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
                 }`}
               >
@@ -285,45 +227,35 @@ function BootcampDetails() {
             ))}
           </div>
 
-          {/* Selected Day Details */}
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h4 className="text-2xl font-bold mb-2">
-                    {schedule[selectedDay].day}
-                  </h4>
-                  <div className="flex items-center gap-4 text-gray-300">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {schedule[selectedDay].date}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      {schedule[selectedDay].time}
-                    </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/20 rounded-3xl p-10 mb-8">
+              <div className="mb-10">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-2 h-2 bg-[#FFD500] rounded-full"></div>
+                  <h4 className="text-3xl font-bold">{schedule[selectedDay].day}</h4>
+                </div>
+                <div className="flex items-center gap-6 text-gray-300 ml-4">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-[#FFD500]" />
+                    <span className="font-semibold">{schedule[selectedDay].date}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-[#46BEF6]" />
+                    <span className="font-semibold">{schedule[selectedDay].time}</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
                 {schedule[selectedDay].sessions.map((session, idx) => (
-                  <div key={idx} className="flex gap-4">
-                    <div
-                      className={`flex-shrink-0 px-4 py-2 bg-gradient-to-br ${getSessionColor(
-                        session.type
-                      )} rounded-lg text-sm font-semibold text-[#00274D]`}
-                    >
-                      {session.time}
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-white font-semibold">
-                        {session.title}
-                      </p>
-                      <p className="text-xs mt-1 inline-block px-2 py-1 rounded bg-white/10 text-gray-300">
-                        {getSessionLabel(session.type)}
-                      </p>
-                    </div>
+                  <div
+                    key={idx}
+                    className="group flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 transform hover:translate-x-1"
+                  >
+                    <div className="w-2 h-2 bg-[#FFD500] rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-white font-semibold group-hover:text-[#FFD500] transition-colors">
+                      {session.title}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -332,62 +264,50 @@ function BootcampDetails() {
         </div>
       </div>
 
-      {/* Benefits Section */}
-      <div className="py-20 container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h3 className="text-4xl font-bold mb-4">مزایای شرکت</h3>
-          <p className="text-gray-300">آنچه از این بوت کمپ خواهید آموخت</p>
+      <div className="py-24 container mx-auto px-4">
+        <div className="text-center mb-20">
+          <h3 className="text-5xl font-bold mb-6">مزایای شرکت</h3>
+          <div className="h-1 w-24 bg-gradient-to-r from-[#FFD500] to-[#46BEF6] mx-auto"></div>
         </div>
 
-        <div className="max-w-3xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-6">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="flex items-start gap-4">
-                <CheckCircle className="w-6 h-6 text-[#FFD500] flex-shrink-0 mt-1" />
-                <p className="text-gray-300">{benefit}</p>
-              </div>
-            ))}
-          </div>
+        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+          {benefits.map((benefit, index) => (
+            <div
+              key={index}
+              className="flex items-start gap-4 p-6 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 transform hover:scale-105"
+            >
+              <CheckCircle className="w-6 h-6 text-[#FFD500] flex-shrink-0 mt-1" />
+              <p className="text-gray-300 text-lg font-semibold">{benefit}</p>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Pricing & Registration Section */}
-      <div className="py-20 bg-black/20 backdrop-blur-sm">
+      <div className="py-24 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-gradient-to-br from-[#FFD500]/20 to-[#FFD500]/5 backdrop-blur-md border border-[#FFD500]/30 rounded-3xl p-12">
-              <div className="text-center mb-8">
-                <Award className="w-16 h-16 text-[#FFD500] mx-auto mb-4" />
-                <h3 className="text-3xl font-bold mb-2">ثبت‌نام در بوت کمپ</h3>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-gradient-to-br from-[#FFD500]/20 via-[#46BEF6]/10 to-[#D7263D]/10 backdrop-blur-md border border-[#FFD500]/30 rounded-3xl p-12">
+              <div className="text-center mb-12">
+                <div className="w-20 h-20 bg-[#FFD500]/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Award className="w-10 h-10 text-[#FFD500]" />
+                </div>
+                <h3 className="text-4xl font-bold mb-2">شروع یادگیری</h3>
+                <p className="text-gray-300">ثبت‌نام رایگان و محدود</p>
               </div>
 
-              <div className="space-y-6 mb-8">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-gray-300">هزینه شرکت:</span>
-                    <span className="text-3xl font-bold text-[#FFD500]">
-                      رایگان
-                    </span>
+              <div className="space-y-6 mb-10">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center transform hover:scale-110 transition-transform">
+                    <div className="text-3xl font-bold text-[#FFD500] mb-2">رایگان</div>
+                    <p className="text-sm text-gray-300">تمام جلسات و منابع</p>
                   </div>
-                  <p className="text-sm text-gray-400">
-                    شامل تمام جلسات و منابع آموزشی
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 text-center">
-                    <div className="text-sm text-gray-300 mb-2">ظرفیت</div>
-                    <div className="text-2xl font-bold text-[#46BEF6]">
-                      100 نفر
-                    </div>
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center transform hover:scale-110 transition-transform">
+                    <div className="text-3xl font-bold text-[#46BEF6] mb-2">100</div>
+                    <p className="text-sm text-gray-300">ظرفیت شرکت‌کنندگان</p>
                   </div>
-                  <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 text-center">
-                    <div className="text-sm text-gray-300 mb-2">
-                      مهلت ثبت‌نام
-                    </div>
-                    <div className="text-2xl font-bold text-[#D7263D]">
-                      30 بهمن
-                    </div>
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center transform hover:scale-110 transition-transform">
+                    <div className="text-3xl font-bold text-[#D7263D] mb-2">30 بهمن</div>
+                    <p className="text-sm text-gray-300">پایان مهلت ثبت‌نام</p>
                   </div>
                 </div>
               </div>
@@ -395,31 +315,25 @@ function BootcampDetails() {
               <div className="space-y-3">
                 <button
                   onClick={() => (window.location.href = "/bootcamp-signup")}
-                  className="w-full bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-bold py-6 rounded-xl text-lg transition-all duration-300 shadow-2xl hover:shadow-[#FFD500]/50 hover:scale-105"
+                  className="w-full bg-gradient-to-r from-[#FFD500] to-[#e6c200] hover:from-[#e6c200] hover:to-[#FFD500] text-[#00274D] font-bold py-6 rounded-xl text-lg transition-all duration-300 shadow-2xl hover:shadow-[#FFD500]/60 hover:scale-105 transform"
                 >
                   <Sparkles className="w-5 h-5 inline-block ml-2" />
                   ثبت‌نام اکنون
                 </button>
                 <button
-                  onClick={() =>
-                    (window.location.href = "mailto:info@icpc.com")
-                  }
-                  className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-6 rounded-xl transition-all duration-300 border border-white/20"
+                  onClick={() => (window.location.href = "mailto:info@icpc.com")}
+                  className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-6 rounded-xl transition-all duration-300 border border-white/20 hover:border-white/40 transform hover:scale-105"
                 >
                   <Mail className="w-5 h-5 inline-block ml-2" />
                   تماس برای اطلاعات بیشتر
                 </button>
               </div>
 
-              <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
-                <p className="text-xs text-gray-400 text-center">
-                  نیاز به حساب کاربری برای ثبت‌نام دارید؟
-                  <a
-                    href="/signup"
-                    className="text-[#FFD500] hover:text-white transition-colors"
-                  >
-                    {" "}
-                    اینجا ثبت‌نام کنید
+              <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 text-center">
+                <p className="text-sm text-gray-400">
+                  نیاز به حساب کاربری دارید؟
+                  <a href="/signup" className="text-[#FFD500] hover:text-white transition-colors font-semibold">
+                    {" "}اینجا ثبت‌نام کنید
                   </a>
                 </p>
               </div>
@@ -428,64 +342,56 @@ function BootcampDetails() {
         </div>
       </div>
 
-      {/* FAQ Preview Section */}
-      <div className="py-20 container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h3 className="text-4xl font-bold mb-4">سوالات متداول</h3>
+      <div className="py-24 container mx-auto px-4">
+        <div className="text-center mb-20">
+          <h3 className="text-5xl font-bold mb-6">سوالات متداول</h3>
+          <div className="h-1 w-24 bg-gradient-to-r from-[#FFD500] to-[#46BEF6] mx-auto"></div>
         </div>
 
         <div className="max-w-3xl mx-auto space-y-4">
-          {[
-            {
-              q: "آیا نیاز به دانش قبلی دارد؟",
-              a: "خیر، برنامه برای تمام سطوح طراحی شده است. اگر مبتدی هستید، مدرسین راهنمایی کافی ارائه خواهند داد.",
-            },
-            {
-              q: "آیا این بوت کمپ برای مسابقه ICPC کافی است؟",
-              a: "این بوت کمپ یک بنیاد قوی فراهم می‌کند. برای تسلط کامل، تمرین مداوم بعد از بوت کمپ ضروری است.",
-            },
-            {
-              q: "آیا فیلم‌های جلسات نگهداری می‌شوند؟",
-              a: "بله، تمام جلسات ضبط شده و شرکت‌کنندگان به مدت 3 ماه دسترسی خواهند داشت.",
-            },
-            {
-              q: "چگونه می‌توانم تماس بگیرم؟",
-              a: "می‌توانید از طریق ایمیل info@icpc.com یا فرم تماس در سایت با ما ارتباط برقرار کنید.",
-            },
-          ].map((item, index) => (
+          {faqs.map((item, index) => (
             <div
               key={index}
-              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300"
+              className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300"
             >
-              <h4 className="text-white font-bold mb-2">{item.q}</h4>
-              <p className="text-gray-300">{item.a}</p>
+              <button
+                onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                className="w-full p-6 flex items-center justify-between hover:bg-white/5 transition-colors"
+              >
+                <h4 className="text-white font-bold text-lg text-right flex-1">{item.q}</h4>
+                <ChevronDown
+                  className={`w-6 h-6 text-[#FFD500] transition-transform duration-300 flex-shrink-0 ${
+                    expandedFaq === index ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {expandedFaq === index && (
+                <div className="px-6 pb-6 bg-white/5 border-t border-white/10">
+                  <p className="text-gray-300 leading-relaxed">{item.a}</p>
+                </div>
+              )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div className="py-16 bg-gradient-to-b from-transparent to-[#003D6B]/50">
+      <div className="py-20 bg-gradient-to-b from-transparent to-[#003D6B]/50">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">
+          <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-white via-[#FFD500] to-white bg-clip-text text-transparent">
             اکنون تصمیم بگیرید و به مسیر موفقیت بپیوندید!
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
-            ظرفیت محدود است - دیر نکنید
-          </p>
+          <p className="text-2xl text-gray-300 mb-12">ظرفیت محدود است - دیر نکنید</p>
           <button
             onClick={() => (window.location.href = "/bootcamp-signup")}
-            className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-bold py-6 px-12 rounded-xl text-lg transition-all duration-300 shadow-2xl hover:shadow-[#FFD500]/50 hover:scale-105"
+            className="bg-gradient-to-r from-[#FFD500] to-[#e6c200] hover:from-[#e6c200] hover:to-[#FFD500] text-[#00274D] font-bold py-6 px-16 rounded-xl text-xl transition-all duration-300 shadow-2xl hover:shadow-[#FFD500]/60 hover:scale-110 transform inline-flex items-center gap-3"
           >
-            <Zap className="w-5 h-5 inline-block ml-2" />
+            <Zap className="w-6 h-6" />
             ثبت‌نام فوری
           </button>
         </div>
       </div>
 
-      {/* Footer */}
       <Footer />
-
     </div>
   );
 }

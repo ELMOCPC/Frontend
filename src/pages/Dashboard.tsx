@@ -178,7 +178,7 @@ function Dashboard() {
     );
   }
 
-  if (error || !userData) {
+  if (!error ) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#00274D] via-[#003D6B] to-[#00274D] flex items-center justify-center text-white">
         <div className="text-center">
