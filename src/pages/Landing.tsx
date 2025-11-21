@@ -36,8 +36,8 @@ function ICPCLanding() {
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [particles, setParticles] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [userData, setUserData] = useState("null");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   useEffect(() => {
