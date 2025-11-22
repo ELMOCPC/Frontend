@@ -21,32 +21,11 @@ function BootcampDetails() {
 
   const instructors = [
     {
-      name: "دکتر محمد رضایی",
-      role: "مدرس الگوریتم‌ها",
-      expertise: "الگوریتم‌های پیشرفته و تئوری گراف",
+      name: "امین انوری",
+      role: "مدرس رفع اشکال",
+      expertise: "الگوریتم‌های پیشرفته و تئوری",
       image: "👨‍🏫",
       color: "from-blue-500 to-cyan-500",
-    },
-    {
-      name: "مهندس علی احمدی",
-      role: "مدرس ساختمان‌های داده",
-      expertise: "ساختمان‌های داده و بهینه‌سازی",
-      image: "👨‍💼",
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      name: "دکتر زهرا موسوی",
-      role: "مدرس رقابت عملی",
-      expertise: "استراتژی رقابتی و حل مسائل",
-      image: "👩‍🏫",
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      name: "مهندس کمال یزدی",
-      role: "دستیار آموزشی",
-      expertise: "پشتیبانی فنی و راهنمایی",
-      image: "👨‍💻",
-      color: "from-amber-500 to-orange-500",
     },
   ];
 
@@ -54,53 +33,50 @@ function BootcampDetails() {
     {
       day: "روز اول",
       date: "6 آذر 1404",
-      time: "09:00 - 15:00",
-      theme: "مبانی",
-      sessions: [
-        { title: "مسئله‌ی کوتاه‌ترین مسیر در جدول" },
-        { title: "مبانی الگوریتم‌ها (پرتو: دکتر رضایی)" },
-        { title: "تمرین عملی و حل مسائل" },
-      ],
+      morning: "09:00 - 14:00",
+      afternoon: "16:00 - 19:00",
+      theme: "کانتست و رفع اشکال",
+      morningTitle: "کانتست آزمایشی ",
+      afternoonTitle: "رفع اشکال با امین انوری",
+      description: "صبح: کانتست حل مسائل | بعد از ظهر: رفع اشکال و بحث",
     },
     {
       day: "روز دوم",
-      date: "16 اسفند 1404",
-      time: "09:00 - 15:00",
-      theme: "ساختمان‌ها",
-      sessions: [
-        { title: "ساختمان‌های داده پایه (پرتو: مهندس احمدی)" },
-        { title: "درخت‌ها و گراف (پرتو: مهندس احمدی)" },
-        { title: "تمرین‌های عملی پیشرفته" },
-      ],
+      date: "7 آذر 1404",
+      morning: "09:00 - 14:00",
+      afternoon: "16:00 - 19:00",
+      theme: "کانتست و رفع اشکال",
+      morningTitle: "کانتست آزمایشی",
+      afternoonTitle: "رفع اشکال با امین انوری",
+      description: "صبح: کانتست حل مسائل | بعد از ظهر: رفع اشکال و بحث",
     },
     {
       day: "روز سوم",
-      date: "17 اسفند 1404",
-      time: "09:00 - 15:00",
-      theme: "الگوریتم",
-      sessions: [
-        { title: "برنامه‌ریزی پویا (پرتو: دکتر رضایی)" },
-        { title: "الگوریتم‌های گراف (پرتو: دکتر رضایی)" },
-        { title: "کارگاه عملی و مسائل چالشی" },
-      ],
+      date: "13 آذر 1404",
+      morning: "09:00 - 14:00",
+      afternoon: "16:00 - 19:00",
+      theme: "کانتست و رفع اشکال",
+      morningTitle: "کانتست آزمایشی",
+      afternoonTitle: "رفع اشکال - مدرس اعلام می‌شود",
+      description: "صبح: کانتست حل مسائل | بعد از ظهر: رفع اشکال",
     },
     {
       day: "روز چهارم",
-      date: "18 اسفند 1404",
-      time: "09:00 - 17:00",
-      theme: "نهایی",
-      sessions: [
-        { title: "مرور و نکات حیاتی (پرتو: دکتر زهرا)" },
-        { title: "مسابقه تیمی و ارزیابی نهایی" },
-      ],
+      date: "14 آذر 1404",
+      morning: "09:00 - 14:00",
+      afternoon: "16:00 - 19:00",
+      theme: "کانتست و رفع اشکال",
+      morningTitle: "کانتست آزمایشی ",
+      afternoonTitle: "رفع اشکال - مدرس اعلام می‌شود",
+      description: "صبح: کانتست حل مسائل | بعد از ظهر: رفع اشکال",
     },
   ];
 
   const benefits = [
-    "آموزش جامع توسط متخصصین صنعت",
+    "آموزش جامع توسط متخصصین نامدار",
     "تجربه حل مسائل رقابتی واقعی",
     "شبکه‌سازی با برنامه‌نویسان نخبه",
-    "گواهی‌نامه معتبر برای شرکت‌کنندگان",
+    " سوالات گلچین شده از بهترین کانست ها",
     "دسترسی به منابع و فیلم‌های آموزشی",
     "پشتیبانی و راهنمایی فنی مداوم",
   ];
@@ -108,11 +84,19 @@ function BootcampDetails() {
   const faqs = [
     {
       q: "آیا نیاز به دانش قبلی دارد؟",
-      a: "خیر، برنامه برای تمام سطوح طراحی شده است. اگر مبتدی هستید، مدرسین راهنمایی کافی ارائه خواهند داد.",
+      a: "بله، این بوتکمپ فشرده پیشرفته است و نیاز به دانش کافی از الگوریتم دارد",
     },
     {
-      q: "آیا این بوت کمپ برای مسابقه ICPC کافی است؟",
+      q: "این کمپ به صورت آنلاین برگزار می شه یا حضوری؟",
+      a: "هم کانتست و هم رفع اشکال هر 2 به صورت آنلاین برگزار می شوند",
+    },
+    {
+      q: "آیا این بوت کمپ برای مسابقه ELMOCPC کافی است؟",
       a: "این بوت کمپ یک بنیاد قوی فراهم می‌کند. برای تسلط کامل، تمرین مداوم بعد از بوت کمپ ضروری است.",
+    },
+    {
+      q: "آیا شرکت برای افراد خارج از دانشگاه علم و صنعت ممکنه؟",
+      a: "بله، شرکت برای عموم افراد حتی دانش آموزان آزاد هست",
     },
     {
       q: "آیا فیلم‌های جلسات نگهداری می‌شوند؟",
@@ -120,7 +104,7 @@ function BootcampDetails() {
     },
     {
       q: "چگونه می‌توانم تماس بگیرم؟",
-      a: "می‌توانید از طریق ایمیل info@icpc.com یا فرم تماس در سایت با ما ارتباط برقرار کنید.",
+      a: "می توانید از طرق آیدی 'cesa_public' در تلگرام با ما در ارتباط باشید",
     },
   ];
 
@@ -150,26 +134,29 @@ function BootcampDetails() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-block mb-6 px-4 py-2 bg-[#FFD500]/20 rounded-full border border-[#FFD500]/50">
-              <span className="text-[#FFD500] font-semibold">🚀 برنامه آموزشی فشرده</span>
+              <span className="text-[#FFD500] font-semibold">
+                🚀 برنامه آموزشی فشرده
+              </span>
             </div>
-            <h2 className="text-6xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-white via-[#FFD500] to-white bg-clip-text text-transparent">
-              آماده‌سازی کامل برای ICPC 2025
-            </h2>
+            <div className="text-6xl md:text-6xl mt-2 font-bold mb-8 bg-gradient-to-r from-white via-[#FFD500] to-white bg-clip-text text-transparent">
+              آماده‌سازی پیشرفته برای ICPC 2025
+            </div>
             <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-              یک برنامه آموزشی جامع و عملی برای تسلط بر مهارت‌های برنامه‌نویسی رقابتی
+              یک برنامه آموزشی جامع و عملی برای تسلط بر مهارت‌های برنامه‌نویسی
+              رقابتی
             </p>
             <div className="flex justify-center gap-8 flex-wrap text-sm">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/10">
                 <Calendar className="w-5 h-5 text-[#FFD500]" />
-                <span>15-18 اسفند 1404</span>
+                <span>7-14 آذر 1404</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/10">
                 <Clock className="w-5 h-5 text-[#46BEF6]" />
-                <span>24 ساعت آموزش</span>
+                <span>کانتست روزانه</span>
               </div>
               <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/10">
                 <Users className="w-5 h-5 text-[#D7263D]" />
-                <span>محدود به 100 نفر</span>
+                <span>محدود به 20 تیم</span>
               </div>
             </div>
           </div>
@@ -188,16 +175,22 @@ function BootcampDetails() {
               key={index}
               className="group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 hover:scale-110 hover:shadow-2xl"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${instructor.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}></div>
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${instructor.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}
+              ></div>
               <div className="relative z-10">
                 <div className="text-7xl mb-4 transform group-hover:scale-125 transition-transform duration-300">
                   {instructor.image}
                 </div>
                 <h4 className="text-xl font-bold mb-2">{instructor.name}</h4>
-                <p className={`text-sm font-semibold mb-3 bg-gradient-to-r ${instructor.color} bg-clip-text text-transparent`}>
+                <p
+                  className={`text-sm font-semibold mb-3 bg-gradient-to-r ${instructor.color} bg-clip-text text-transparent`}
+                >
                   {instructor.role}
                 </p>
-                <p className="text-gray-400 text-sm leading-relaxed">{instructor.expertise}</p>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  {instructor.expertise}
+                </p>
               </div>
             </div>
           ))}
@@ -232,32 +225,50 @@ function BootcampDetails() {
               <div className="mb-10">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-2 h-2 bg-[#FFD500] rounded-full"></div>
-                  <h4 className="text-3xl font-bold">{schedule[selectedDay].day}</h4>
+                  <h4 className="text-3xl font-bold">
+                    {schedule[selectedDay].day}
+                  </h4>
                 </div>
                 <div className="flex items-center gap-6 text-gray-300 ml-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-[#FFD500]" />
-                    <span className="font-semibold">{schedule[selectedDay].date}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-[#46BEF6]" />
-                    <span className="font-semibold">{schedule[selectedDay].time}</span>
+                    <span className="font-semibold">
+                      {schedule[selectedDay].date}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                {schedule[selectedDay].sessions.map((session, idx) => (
-                  <div
-                    key={idx}
-                    className="group flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 transform hover:translate-x-1"
-                  >
-                    <div className="w-2 h-2 bg-[#FFD500] rounded-full mt-2 flex-shrink-0"></div>
-                    <p className="text-white font-semibold group-hover:text-[#FFD500] transition-colors">
-                      {session.title}
+              <div className="space-y-6">
+                {/* صبح - کانتست */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-5 h-5 text-[#46BEF6]" />
+                    <span className="font-bold text-lg">
+                      {schedule[selectedDay].morning}
+                    </span>
+                  </div>
+                  <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                    <p className="text-white font-semibold">
+                      🎯 {schedule[selectedDay].morningTitle}
                     </p>
                   </div>
-                ))}
+                </div>
+
+                {/* بعد از ظهر - رفع اشکال */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-5 h-5 text-[#FFD500]" />
+                    <span className="font-bold text-lg">
+                      {schedule[selectedDay].afternoon}
+                    </span>
+                  </div>
+                  <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                    <p className="text-white font-semibold">
+                      💡 {schedule[selectedDay].afternoonTitle}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -292,21 +303,30 @@ function BootcampDetails() {
                   <Award className="w-10 h-10 text-[#FFD500]" />
                 </div>
                 <h3 className="text-4xl font-bold mb-2">شروع یادگیری</h3>
-                <p className="text-gray-300">ثبت‌نام رایگان و محدود</p>
+                <p className="text-gray-300">ثبت‌نام محدود</p>
               </div>
 
               <div className="space-y-6 mb-10">
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center transform hover:scale-110 transition-transform">
-                    <div className="text-3xl font-bold text-[#FFD500] mb-2">رایگان</div>
-                    <p className="text-sm text-gray-300">تمام جلسات و منابع</p>
+                    <div className="text-3xl font-bold text-[#FFD500] mb-2">
+                      200
+                    </div>
+                    <p className="text-sm text-gray-300">
+                      {" "}
+                      هزار تومن تمام جلسات و منابع{" "}
+                    </p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center transform hover:scale-110 transition-transform">
-                    <div className="text-3xl font-bold text-[#46BEF6] mb-2">100</div>
+                    <div className="text-3xl font-bold text-[#46BEF6] mb-2">
+                      20 تیم
+                    </div>
                     <p className="text-sm text-gray-300">ظرفیت شرکت‌کنندگان</p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center transform hover:scale-110 transition-transform">
-                    <div className="text-3xl font-bold text-[#D7263D] mb-2">30 بهمن</div>
+                    <div className="text-3xl font-bold text-[#D7263D] mb-2">
+                      5 آذر
+                    </div>
                     <p className="text-sm text-gray-300">پایان مهلت ثبت‌نام</p>
                   </div>
                 </div>
@@ -321,7 +341,9 @@ function BootcampDetails() {
                   ثبت‌نام اکنون
                 </button>
                 <button
-                  onClick={() => (window.location.href = "mailto:info@icpc.com")}
+                  onClick={() =>
+                    (window.location.href = "mailto:info@icpc.com")
+                  }
                   className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-6 rounded-xl transition-all duration-300 border border-white/20 hover:border-white/40 transform hover:scale-105"
                 >
                   <Mail className="w-5 h-5 inline-block ml-2" />
@@ -332,8 +354,12 @@ function BootcampDetails() {
               <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/10 text-center">
                 <p className="text-sm text-gray-400">
                   نیاز به حساب کاربری دارید؟
-                  <a href="/signup" className="text-[#FFD500] hover:text-white transition-colors font-semibold">
-                    {" "}اینجا ثبت‌نام کنید
+                  <a
+                    href="/signup"
+                    className="text-[#FFD500] hover:text-white transition-colors font-semibold"
+                  >
+                    {" "}
+                    اینجا ثبت‌نام کنید
                   </a>
                 </p>
               </div>
@@ -355,10 +381,14 @@ function BootcampDetails() {
               className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300"
             >
               <button
-                onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                onClick={() =>
+                  setExpandedFaq(expandedFaq === index ? null : index)
+                }
                 className="w-full p-6 flex items-center justify-between hover:bg-white/5 transition-colors"
               >
-                <h4 className="text-white font-bold text-lg text-right flex-1">{item.q}</h4>
+                <h4 className="text-white font-bold text-lg text-right flex-1">
+                  {item.q}
+                </h4>
                 <ChevronDown
                   className={`w-6 h-6 text-[#FFD500] transition-transform duration-300 flex-shrink-0 ${
                     expandedFaq === index ? "rotate-180" : ""
@@ -377,10 +407,9 @@ function BootcampDetails() {
 
       <div className="py-20 bg-gradient-to-b from-transparent to-[#003D6B]/50">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-white via-[#FFD500] to-white bg-clip-text text-transparent">
-            اکنون تصمیم بگیرید و به مسیر موفقیت بپیوندید!
-          </h2>
-          <p className="text-2xl text-gray-300 mb-12">ظرفیت محدود است - دیر نکنید</p>
+          <p className="text-2xl text-gray-300 mb-12">
+            ظرفیت محدود است - دیر نکنید
+          </p>
           <button
             onClick={() => (window.location.href = "/bootcamp-signup")}
             className="bg-gradient-to-r from-[#FFD500] to-[#e6c200] hover:from-[#e6c200] hover:to-[#FFD500] text-[#00274D] font-bold py-6 px-16 rounded-xl text-xl transition-all duration-300 shadow-2xl hover:shadow-[#FFD500]/60 hover:scale-110 transform inline-flex items-center gap-3"

@@ -26,6 +26,8 @@ import cesa from "../assets/CESA.svg";
 import uni from "../assets/uni.png";
 import Footer from "@/components/Custom/Footer.tsx";
 
+import useUserStore from "@/store/userStore/userStore";
+
 function ICPCLanding() {
   const [scrollY, setScrollY] = useState(0);
   const [countdown, setCountdown] = useState({
@@ -36,22 +38,12 @@ function ICPCLanding() {
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [particles, setParticles] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(null);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    // چک کردن اگر کاربر لاگین کرده
-    const accessToken = localStorage.getItem("access_token");
-    const userDataStr = localStorage.getItem("userData");
-
-    if (accessToken) {
-      setIsLoggedIn(true);
-      if (userDataStr) {
-        setUserData(JSON.parse(userDataStr));
-      }
-    }
-  }, []);
+  const { authUser, clearAuth } = useUserStore();
+  const isLoggedIn = !!authUser;
+  const displayName =
+    authUser?.first_name || authUser?.email?.split("@")[0] || "کاربر";
 
   useEffect(() => {
     const newParticles = [...Array(40)].map((_, i) => ({
@@ -115,15 +107,15 @@ function ICPCLanding() {
   };
 
   const handleLogout = () => {
+    // 🆕 پاک کردن استور و توکن‌ها
+    clearAuth();
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
-    localStorage.removeItem("userData");
-    setIsLoggedIn(false);
-    setUserData(null);
+    localStorage.removeItem("userData"); // اگر قبلاً استفاده می‌کردی
     setUserDropdownOpen(false);
   };
 
-  const scrollToSection = (id) => {
+  const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
@@ -296,14 +288,13 @@ function ICPCLanding() {
             </div>
 
             {/* CTA Buttons or User Profile */}
+            {/* CTA Buttons or User Profile */}
             <div className="hidden md:flex items-center gap-3">
-              {isLoggedIn && userData ? (
+              {isLoggedIn ? (
                 <div className="relative group">
-                  <button
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200"
-                  >
+                  <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200">
                     <User className="w-5 h-5" />
-                    <span>{userData?.name}</span>
+                    <span>{displayName}</span>
                   </button>
 
                   <div className="absolute top-full left-0 mt-2 w-48 bg-[#00274D]/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
@@ -313,15 +304,6 @@ function ICPCLanding() {
                     >
                       <Home className="w-4 h-4" />
                       داشبورد
-                    </button>
-                    <button
-                      onClick={() => {
-                        window.location.href = "/profile";
-                      }}
-                      className="w-full px-4 py-2 text-right text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 flex items-center gap-2"
-                    >
-                      <User className="w-4 h-4" />
-                      پروفایل
                     </button>
                     <hr className="my-2 border-white/10" />
                     <button
@@ -378,7 +360,7 @@ function ICPCLanding() {
                 </button>
               ))}
               <div className="flex flex-col gap-2 mt-4 px-4">
-                {isLoggedIn && userData ? (
+                {isLoggedIn ? (
                   <>
                     <Button
                       onClick={handleDashboardClick}
@@ -623,12 +605,12 @@ function ICPCLanding() {
               آماده‌سازی شدید برای مسابقه با برنامه آموزشی فشرده و عملی
             </p>
           </div>
-
+{/* 
           <div
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             dir="rtl"
-          >
-            {bootcampModules.map((module, index) => (
+          > */}
+            {/* {bootcampModules.map((module, index) => (
               <a
                 key={index}
                 href="/camp"
@@ -660,10 +642,10 @@ function ICPCLanding() {
                       </li>
                     ))}
                   </ul>
-                </div>
-              </a>
+                </div> */}
+              {/* </a>
             ))}
-          </div>
+          </div> */}
 
           <div className="bg-gradient-to-r from-[#46BEF6]/20 to-[#D7263D]/20 backdrop-blur-md border border-white/10 rounded-2xl p-8">
             <div className="grid md:grid-cols-3 gap-8 mb-8">

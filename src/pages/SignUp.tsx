@@ -22,6 +22,7 @@ import type {
   VerifyOtpErrorResponse,
 } from "@/types/authTypes";
 import { toast } from "sonner";
+import useUserStore from "../store/userStore/userStore";
 
 // Validation schema برای فرم ثبت نام
 const validationSchema = Yup.object({
@@ -52,6 +53,10 @@ const validationSchema = Yup.object({
     .matches(/^09[0-9]{9}$/, "شماره موبایل باید با ۰۹ شروع شده و ۱۱ رقم باشد")
     .required("شماره موبایل الزامی است"),
 
+  national_code: Yup.string()
+    .matches(/^[0-9]{10}$/, "کد ملی باید ۱۰ رقم باشد")
+    .required("کد ملی الزامی است"),
+
   tshirt_size: Yup.string()
     .oneOf(["M", "L", "XL", "XXL"], "سایز معتبر نیست")
     .required("سایز تیشرت الزامی است"),
@@ -66,6 +71,7 @@ interface SignUpFormValues {
   familyName: string;
   email: string;
   phone: string;
+  national_code: string;
   tshirt_size: string;
   university: string;
 }
@@ -75,6 +81,7 @@ interface UserData {
   familyName: string;
   email: string;
   phone: string;
+  national_code: string;
   tshirt_size: string;
   university: string;
 }
@@ -85,6 +92,8 @@ function SignUp() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpValue, setOtpValue] = useState("");
+
+  const { setAuth } = useUserStore();
 
   // مرحله ۱: ارسال فرم و درخواست OTP
   const handleSubmit = async (
@@ -97,6 +106,7 @@ function SignUp() {
         familyName: values.familyName.trim(),
         email: values.email.trim().toLowerCase(),
         phone: values.phone.trim(),
+        national_code: values.national_code.trim(),
         tshirt_size: values.tshirt_size.trim(),
         university: values.university.trim(),
       };
@@ -106,6 +116,7 @@ function SignUp() {
         last_name: normalizedData.familyName,
         email: normalizedData.email,
         phone: normalizedData.phone,
+        national_code: normalizedData.national_code,
         tshirt_size: normalizedData.tshirt_size,
         university: normalizedData.university,
       };
@@ -129,6 +140,10 @@ function SignUp() {
         if (backend.messages.email) {
           setFieldError("email", "ایمیل قبلاً ثبت شده است.");
           toast.error("ایمیل قبلاً ثبت شده است.");
+        }
+        if (backend.messages.national_code) {
+          setFieldError("national_code", "کد ملی قبلاً ثبت شده است.");
+          toast.error("کد ملی قبلاً ثبت شده است.");
         }
         return;
       }
@@ -159,10 +174,12 @@ function SignUp() {
 
       console.log("verify otp response:", res);
 
-      const { access_token, refresh_token } = res.data;
+      // 🆕 به‌جای localStorage، همه‌چیز رو به استور بده
+      // res.data از نوع AuthUserWithTokens هست
+      setAuth(res.data);
 
-      localStorage.setItem("access_token", access_token);
-      localStorage.setItem("refresh_token", refresh_token);
+      localStorage.setItem("access_token", res.data.access_token);
+      localStorage.setItem("refresh_token", res.data.refresh_token);
 
       toast.success("حساب کاربری شما با موفقیت ساخته شد!");
       navigate("/dashboard");
@@ -214,6 +231,7 @@ function SignUp() {
               familyName: "",
               email: "",
               phone: "",
+              national_code: "",
               tshirt_size: "",
               university: "",
             }}
@@ -259,12 +277,22 @@ function SignUp() {
                       maxLength={11}
                     />
 
+                    <CustomInput
+                      name="national_code"
+                      type="text"
+                      label="کد ملی"
+                      className="w-full px-4 py-3 rounded-lg"
+                      dir="ltr"
+                      maxLength={10}
+                      inputMode="numeric"
+                    />
+
                     {/* سایز تیشرت به صورت Select */}
                     <div className="space-y-2 rtl">
                       <Select
                         value={values.tshirt_size}
                         onValueChange={(val) => setFieldValue("tshirt_size", val)}
-                        dir= "rtl"
+                        dir="rtl"
                       >
                         <SelectTrigger className="w-full bg-white/10 backdrop-blur-md text-white border border-white/20">
                           <SelectValue placeholder="سایز را انتخاب کنید" />
