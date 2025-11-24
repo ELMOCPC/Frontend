@@ -9,7 +9,6 @@ import {
   LogOut,
   User,
   Bell,
-  ChevronRight,
   Award,
   Clock,
   CheckCircle,
@@ -29,7 +28,7 @@ import CESA from "@/assets/CESA.svg";
 
 // 🆕 استور احراز هویت
 import useUserStore from "@/store/userStore/userStore";
-import type { AuthUserWithTokens } from "@/types/authTypes";
+// import type { AuthUserWithTokens } from "@/types/authTypes";
 
 // نوع ساده برای یوزر داخل داشبورد
 type DashboardUser = {
@@ -66,7 +65,7 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userData, setUserData] = useState<DashboardUser | null>(null);
-  const [teamData, setTeamData] = useState<DashboardTeam>(null);
+  const [teamData] = useState<DashboardTeam>(null);
   const [loading, setLoading] = useState(true);
 
   // اگه یوزر نداشتیم => بفرست لاگین، وگرنه داده‌ها رو از استور نگه دار

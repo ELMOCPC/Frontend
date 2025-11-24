@@ -105,13 +105,13 @@ function TeamRegistration() {
     { title: "تایید نهایی", icon: CheckCircle },
   ];
 
-  const handleTeamNameSubmit = (values, { setSubmitting }) => {
+  const handleTeamNameSubmit = (values: any, { setSubmitting }: any) => {
     setTeamData({ ...teamData, teamName: values.teamName });
     setCurrentStep(1);
     setSubmitting(false);
   };
 
-  const handleMemberSubmit = (values, { setSubmitting }) => {
+  const handleMemberSubmit = (values: any, { setSubmitting }: any) => {
     const updatedMembers = [...teamData.members];
     updatedMembers[currentStep - 1] = {
       ...values,
@@ -135,7 +135,7 @@ function TeamRegistration() {
     }
   };
 
-  const handleEdit = (step) => {
+  const handleEdit = (step: any) => {
     setCurrentStep(step);
   };
 

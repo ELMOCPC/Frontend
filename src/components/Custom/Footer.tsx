@@ -1,6 +1,6 @@
 import { Mail, Instagram, Send } from "lucide-react"; // Send رو به عنوان Telegram icon موقت
 import cesa from "@/assets/CESA.svg";
-import uni from "@/assets/UNI.png";
+import uni from "@/assets/UNi.png";
 import elmocpc from "@/assets/ELMOCPC.svg";
 
 const Footer = () => {

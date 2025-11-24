@@ -1,0 +1,9 @@
+services:
+  frontend:
+    build: .
+    image: ghcr.io/elmocpc/react-ts-zustand
+    container_name: frontend
+    ports:
+      - 3001:4173
+    env_file:
+      - .env.development

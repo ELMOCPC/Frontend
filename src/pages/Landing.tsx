@@ -5,28 +5,19 @@ import {
   Trophy,
   Users,
   Code,
-  ChevronDown,
   Clock,
-  MapPin,
   Award,
   Zap,
   Target,
-  Sparkles,
   Menu,
   X,
   Home,
   Info,
   Mail,
   BookOpen,
-  Laptop,
-  LogOut,
-  User,
 } from "lucide-react";
 import cesa from "../assets/CESA.svg";
-import uni from "../assets/uni.png";
 import Footer from "@/components/Custom/Footer.tsx";
-
-import useUserStore from "@/store/userStore/userStore";
 
 function ICPCLanding() {
   const [scrollY, setScrollY] = useState(0);
@@ -37,13 +28,7 @@ function ICPCLanding() {
     seconds: 15,
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [particles, setParticles] = useState([]);
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-
-  const { authUser, clearAuth } = useUserStore();
-  const isLoggedIn = !!authUser;
-  const displayName =
-    authUser?.first_name || authUser?.email?.split("@")[0] || "کاربر";
+  const [particles, setParticles] = useState<any[]>([]);
 
   useEffect(() => {
     const newParticles = [...Array(40)].map((_, i) => ({
@@ -90,29 +75,8 @@ function ICPCLanding() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleRegisterClick = () => {
-    window.location.href = "/signup";
-  };
-
   const handleCampClick = () => {
     window.location.href = "/camp";
-  };
-
-  const handleLoginClick = () => {
-    window.location.href = "/login";
-  };
-
-  const handleDashboardClick = () => {
-    window.location.href = "/dashboard";
-  };
-
-  const handleLogout = () => {
-    // 🆕 پاک کردن استور و توکن‌ها
-    clearAuth();
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("userData"); // اگر قبلاً استفاده می‌کردی
-    setUserDropdownOpen(false);
   };
 
   const scrollToSection = (id: string) => {
@@ -202,36 +166,36 @@ function ICPCLanding() {
     },
   ];
 
-  const bootcampModules = [
-    {
-      day: "روز اول",
-      title: "مبانی الگوریتم‌ها",
-      topics: ["مرتب‌سازی", "جستجو", "تحلیل پیچیدگی"],
-      icon: Code,
-      gradient: "from-blue-500 to-cyan-500",
-    },
-    {
-      day: "روز دوم",
-      title: "ساختمان‌های داده",
-      topics: ["آرایه‌ها", "لیست‌های پیوندی", "صف و پشته"],
-      icon: Laptop,
-      gradient: "from-purple-500 to-pink-500",
-    },
-    {
-      day: "روز سوم",
-      title: "الگوریتم‌های پیشرفته",
-      topics: ["پویا سازی", "گراف", "درخت‌ها"],
-      icon: BookOpen,
-      gradient: "from-amber-500 to-orange-500",
-    },
-    {
-      day: "روز چهارم",
-      title: "مسابقه عملی",
-      topics: ["حل مسائل", "تیم‌ورک", "تقابل نهایی"],
-      icon: Trophy,
-      gradient: "from-green-500 to-emerald-500",
-    },
-  ];
+  // const bootcampModules = [
+  //   {
+  //     day: "روز اول",
+  //     title: "مبانی الگوریتم‌ها",
+  //     topics: ["مرتب‌سازی", "جستجو", "تحلیل پیچیدگی"],
+  //     icon: Code,
+  //     gradient: "from-blue-500 to-cyan-500",
+  //   },
+  //   {
+  //     day: "روز دوم",
+  //     title: "ساختمان‌های داده",
+  //     topics: ["آرایه‌ها", "لیست‌های پیوندی", "صف و پشته"],
+  //     icon: Laptop,
+  //     gradient: "from-purple-500 to-pink-500",
+  //   },
+  //   {
+  //     day: "روز سوم",
+  //     title: "الگوریتم‌های پیشرفته",
+  //     topics: ["پویا سازی", "گراف", "درخت‌ها"],
+  //     icon: BookOpen,
+  //     gradient: "from-amber-500 to-orange-500",
+  //   },
+  //   {
+  //     day: "روز چهارم",
+  //     title: "مسابقه عملی",
+  //     topics: ["حل مسائل", "تیم‌ورک", "تقابل نهایی"],
+  //     icon: Trophy,
+  //     gradient: "from-green-500 to-emerald-500",
+  //   },
+  // ];
 
   const timeline = [
     { date: "1 تا 5 آذر 1404", title: "ثبت نام بوت کمپ", status: "active" },
@@ -262,14 +226,12 @@ function ICPCLanding() {
               className="flex items-center gap-3 cursor-pointer"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             >
-              <div>
-                <div className="text-xl font-bold">
-                  <span className="text-[#ffffff]">ELMO</span>
-                  <span className="text-[#46BEF6]">C</span>
-                  <span className="text-[#D7263D]">P</span>
-                  <span className="text-[#FFD500]">C</span>
-                  <span className="text-white"> 2025</span>
-                </div>
+              <div className="text-xl font-bold">
+                <span className="text-[#ffffff]">ELMO</span>
+                <span className="text-[#46BEF6]">C</span>
+                <span className="text-[#D7263D]">P</span>
+                <span className="text-[#FFD500]">C</span>
+                <span className="text-white"> 2025</span>
               </div>
             </div>
 
@@ -287,51 +249,8 @@ function ICPCLanding() {
               ))}
             </div>
 
-            {/* CTA Buttons or User Profile */}
-            {/* CTA Buttons or User Profile */}
-            <div className="hidden md:flex items-center gap-3">
-              {isLoggedIn ? (
-                <div className="relative group">
-                  <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200">
-                    <User className="w-5 h-5" />
-                    <span>{displayName}</span>
-                  </button>
-
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-[#00274D]/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                    <button
-                      onClick={handleDashboardClick}
-                      className="w-full px-4 py-2 text-right text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 flex items-center gap-2"
-                    >
-                      <Home className="w-4 h-4" />
-                      داشبورد
-                    </button>
-                    <hr className="my-2 border-white/10" />
-                    <button
-                      onClick={handleLogout}
-                      className="w-full px-4 py-2 text-right text-red-400 hover:text-red-300 hover:bg-white/10 transition-all duration-200 flex items-center gap-2"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      خروج
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <Button
-                    onClick={handleLoginClick}
-                    className="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-lg transition-all duration-200"
-                  >
-                    ورود
-                  </Button>
-                  <Button
-                    onClick={handleRegisterClick}
-                    className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-semibold px-6 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-[#FFD500]/50"
-                  >
-                    ثبت‌نام
-                  </Button>
-                </>
-              )}
-            </div>
+            {/* Right side – فعلاً خالی، بدون دکمه لاگین/ثبت‌نام */}
+            <div className="hidden md:flex items-center gap-3" />
 
             {/* Mobile Menu Button */}
             <button
@@ -353,45 +272,12 @@ function ICPCLanding() {
                 <button
                   key={index}
                   onClick={item.action}
-                  className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200"
+                  className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-white/80 hover:text-white hover:bg:white/10 transition-all duration-200"
                 >
                   <item.icon className="w-5 h-5" />
                   {item.label}
                 </button>
               ))}
-              <div className="flex flex-col gap-2 mt-4 px-4">
-                {isLoggedIn ? (
-                  <>
-                    <Button
-                      onClick={handleDashboardClick}
-                      className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg transition-all duration-200"
-                    >
-                      داشبورد
-                    </Button>
-                    <Button
-                      onClick={handleLogout}
-                      className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-300 py-3 rounded-lg transition-all duration-200"
-                    >
-                      خروج
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button
-                      onClick={handleLoginClick}
-                      className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg transition-all duration-200"
-                    >
-                      ورود
-                    </Button>
-                    <Button
-                      onClick={handleRegisterClick}
-                      className="w-full bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-semibold py-3 rounded-lg transition-all duration-200"
-                    >
-                      ثبت‌نام
-                    </Button>
-                  </>
-                )}
-              </div>
             </div>
           )}
         </div>
@@ -472,7 +358,7 @@ function ICPCLanding() {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 min-w-[80px]"
+                  className="bg:white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 min-w-[80px]"
                 >
                   <div className="text-3xl font-bold text-[#FFD500]">
                     {item.value}
@@ -483,49 +369,17 @@ function ICPCLanding() {
             </div>
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons – فقط بوت‌کمپ */}
           <div
             className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up"
             style={{ animationDelay: "0.8s" }}
           >
-            {isLoggedIn ? (
-              <>
-                <Button
-                  onClick={handleDashboardClick}
-                  className="group relative bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-bold py-6 px-12 rounded-xl text-lg transition-all duration-300 shadow-2xl hover:shadow-[#FFD500]/50 hover:scale-105"
-                >
-                  <Home className="w-5 h-5 inline-block ml-2 group-hover:rotate-12 transition-transform" />
-                  رفتن به داشبورد
-                </Button>
-                <Button
-                  onClick={handleCampClick}
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-semibold py-6 px-12 rounded-xl text-lg transition-all duration-300 hover:scale-105"
-                >
-                  اطلاعات بوت کمپ
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  onClick={handleRegisterClick}
-                  className="group relative bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-bold py-6 px-12 rounded-xl text-lg transition-all duration-300 shadow-2xl hover:shadow-[#FFD500]/50 hover:scale-105"
-                >
-                  <Sparkles className="w-5 h-5 inline-block ml-2 group-hover:rotate-12 transition-transform" />
-                  ثبت‌نام در مسابقه
-                </Button>
-                <Button
-                  onClick={handleCampClick}
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-semibold py-6 px-12 rounded-xl text-lg transition-all duration-300 hover:scale-105"
-                >
-                  اطلاعات بوت کمپ
-                </Button>
-              </>
-            )}
-          </div>
-
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-            {/* <ChevronDown className="w-8 h-8 text-[#FFD500]" /> */}
+            <Button
+              onClick={handleCampClick}
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-semibold py-6 px-12 rounded-xl text-lg transition-all duration-300 hover:scale-105"
+            >
+              اطلاعات بوت کمپ
+            </Button>
           </div>
         </div>
       </div>
@@ -605,12 +459,14 @@ function ICPCLanding() {
               آماده‌سازی شدید برای مسابقه با برنامه آموزشی فشرده و عملی
             </p>
           </div>
-{/* 
+
+          {/* کارت‌های بوت‌کمپ اگر بعداً خواستی فعال کنی */}
+          {/*
           <div
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             dir="rtl"
-          > */}
-            {/* {bootcampModules.map((module, index) => (
+          >
+            {bootcampModules.map((module, index) => (
               <a
                 key={index}
                 href="/camp"
@@ -642,10 +498,11 @@ function ICPCLanding() {
                       </li>
                     ))}
                   </ul>
-                </div> */}
-              {/* </a>
+                </div>
+              </a>
             ))}
-          </div> */}
+          </div>
+          */}
 
           <div className="bg-gradient-to-r from-[#46BEF6]/20 to-[#D7263D]/20 backdrop-blur-md border border-white/10 rounded-2xl p-8">
             <div className="grid md:grid-cols-3 gap-8 mb-8">
@@ -663,7 +520,7 @@ function ICPCLanding() {
               </div>
               <div className="text-center">
                 <Award className="w-12 h-12 text-[#D7263D] mx-auto mb-4" />
-                <h4 className="text-lg font-bold text-white mb-2">
+                <h4 className="text-lg font-bold text:white mb-2">
                   گواهی‌نامه
                 </h4>
                 <p className="text-gray-300">
@@ -673,7 +530,7 @@ function ICPCLanding() {
             </div>
             <div className="text-center">
               <Button
-                onClick={() => (window.location.href = "/camp")}
+                onClick={handleCampClick}
                 className="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 hover:scale-105 border border-white/20"
               >
                 مشاهده جزئیات کامل
@@ -701,7 +558,7 @@ function ICPCLanding() {
                 className={`w-4 h-4 rounded-full ${
                   item.status === "active"
                     ? "bg-[#FFD500] animate-pulse"
-                    : "bg-white/30"
+                    : "bg:white/30"
                 } z-10`}
               />
               {index !== timeline.length - 1 && (
@@ -739,15 +596,7 @@ function ICPCLanding() {
               به جمع شرکت‌کنندگان ElmocPC بپیوندید و مهارت‌های الگوریتمی خود را
               در شرایط شبیه‌سازی‌شده‌ی آزمون کشوری محک بزنید.
             </p>
-            {!isLoggedIn && (
-              <Button
-                onClick={handleRegisterClick}
-                className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-bold py-6 px-12 rounded-xl text-lg transition-all duration-300 shadow-2xl hover:shadow-[#FFD500]/50 hover:scale-105"
-              >
-                <Sparkles className="w-5 h-5 inline-block ml-2" />
-                همین الان ثبت‌نام کنید
-              </Button>
-            )}
+            {/* دکمه ثبت‌نام فعلاً حذف شده تا لاگین/ثبت‌نام نداشته باشیم */}
           </div>
         </div>
       </div>
@@ -755,7 +604,7 @@ function ICPCLanding() {
       {/* Footer */}
       <Footer />
 
-      <style jsx>{`
+      <style>{`
         @keyframes slide-up {
           from {
             opacity: 0;

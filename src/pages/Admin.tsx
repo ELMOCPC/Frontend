@@ -9,13 +9,13 @@ import {
   Mail,
   Phone,
   Award,
-  Clock,
-  Filter,
+  // Clock,
+  // Filter,
   LogOut,
   Menu,
   X,
   Eye,
-  Download,
+  // Download,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,7 +42,7 @@ function AdminTeamsApproval() {
   const navigate = useNavigate();
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [ setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "rejected">("pending");
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -87,7 +87,7 @@ function AdminTeamsApproval() {
       setTeams(data.data || []);
     } catch (err: any) {
       console.error("Error:", err);
-      setError(err.message);
+      // setError(err.message);
       toast.error(err.message || "خطا در بارگذاری تیم‌ها");
     } finally {
       setLoading(false);
