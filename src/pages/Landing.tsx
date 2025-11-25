@@ -14,6 +14,7 @@ import {
   Home,
   Info,
   Mail,
+  Flag,
   BookOpen,
 } from "lucide-react";
 import cesa from "../assets/CESA.svg";
@@ -22,9 +23,9 @@ import Footer from "@/components/Custom/Footer.tsx";
 function ICPCLanding() {
   const [scrollY, setScrollY] = useState(0);
   const [countdown, setCountdown] = useState({
-    days: 45,
-    hours: 12,
-    minutes: 30,
+    days: 16,
+    hours: 1,
+    minutes: 58,
     seconds: 15,
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -77,6 +78,11 @@ function ICPCLanding() {
 
   const handleCampClick = () => {
     window.location.href = "/camp";
+  };
+
+  const handleSignCampClick = () => {
+    window.location.href =
+      "https://evand.com/events/%DA%A9%D9%85%D9%BE-%D8%A2%D9%85%D8%A7%D8%AF%DA%AF%DB%8C-elmocpc-42621082";
   };
 
   const scrollToSection = (id: string) => {
@@ -133,6 +139,12 @@ function ICPCLanding() {
       number: "4",
       label: "سال برگزاری",
       color: "#FFD500",
+    },
+    {
+      icon: Flag, // یا هر آیکون مناسب دیگر از lucide-react
+      number: "150+",
+      label: "تیم ثبت‌نام‌شده",
+      color: "#3DDC84",
     },
   ];
 
@@ -200,7 +212,7 @@ function ICPCLanding() {
   const timeline = [
     { date: "1 تا 5 آذر 1404", title: "ثبت نام بوت کمپ", status: "active" },
     { date: "6 تا 14 آذر 1404", title: "برگزاری بوت کمپ", status: "upcoming" },
-    { date: "4 آذر 1404", title: "شروع ثبت‌نام", status: "upcoming" },
+    { date: "7 آذر 1404", title: "شروع ثبت‌نام", status: "upcoming" },
     { date: "15 آذر 1404", title: "پایان ثبت‌نام", status: "upcoming" },
     { date: "21 آذر 1404", title: "روز مسابقه", status: "upcoming" },
   ];
@@ -339,6 +351,14 @@ function ICPCLanding() {
           >
             پنجمین دوره مسابقات برنامه‌نویسی دانشجویی دانشگاه علم و صنعت
           </p>
+          <p
+            className="text-2xl md:text-3xl font-bold mb-4 text-gray-200 animate-slide-up"
+            dir="rtl"
+            lang="fa"
+            style={{ animationDelay: "0.2s" }}
+          >
+            ثبت نام مسابقه بزودی
+          </p>
 
           {/* Countdown Timer */}
           <div
@@ -347,7 +367,7 @@ function ICPCLanding() {
           >
             <p className="text-sm text-[#FFD500] mb-4 flex items-center justify-center gap-2">
               <Clock className="w-4 h-4" />
-              زمان باقی‌مانده تا پایان ثبت‌نام
+              زمان باقی‌مانده تا روز مسابقه
             </p>
             <div className="flex justify-center gap-4 flex-wrap" dir="ltr">
               {[
@@ -376,9 +396,15 @@ function ICPCLanding() {
           >
             <Button
               onClick={handleCampClick}
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-semibold py-6 px-12 rounded-xl text-lg transition-all duration-300 hover:scale-105"
+              className="bg-white/10 cursor-pointer hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-semibold py-6 px-12 rounded-xl text-lg transition-all duration-300 hover:scale-105"
             >
               اطلاعات بوت کمپ
+            </Button>
+            <Button
+              onClick={handleSignCampClick}
+              className="bg-gradient-to-r cursor-pointer from-[#FFD500] to-[#e6c200] hover:from-[#e6c200] hover:to-[#FFD500] text-[#00274D] backdrop-blur-md border border-white/30 font-semibold py-6 px-12 rounded-xl text-lg transition-all duration-300 hover:scale-105"
+            >
+              ثبت نام بوت کمپ
             </Button>
           </div>
         </div>
@@ -387,7 +413,7 @@ function ICPCLanding() {
       {/* Stats Section */}
       <div className="py-20 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div
                 key={index}
@@ -432,9 +458,6 @@ function ICPCLanding() {
             >
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300`}
-              />
-              <feature.icon
-                className={`w-12 h-12 mb-4 bg-gradient-to-br ${feature.gradient} bg-clip-text text-transparent`}
               />
               <h3 className="text-xl font-bold mb-2 text-white">
                 {feature.title}
