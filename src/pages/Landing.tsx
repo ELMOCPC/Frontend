@@ -23,11 +23,35 @@ import Footer from "@/components/Custom/Footer.tsx";
 function ICPCLanding() {
   const [scrollY, setScrollY] = useState(0);
   const [countdown, setCountdown] = useState({
-    days: 16,
-    hours: 1,
-    minutes: 58,
-    seconds: 15,
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
   });
+  useEffect(() => {
+    const targetDate = new Date("2025-12-12T00:00:00"); // 12 دسامبر 2025
+
+    const timer = setInterval(() => {
+      const now = new Date();
+      const diff = targetDate.getTime() - now.getTime(); // میلی‌ثانیه باقی‌مانده
+
+      if (diff <= 0) {
+        clearInterval(timer);
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      setCountdown({ days, hours, minutes, seconds });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [particles, setParticles] = useState<any[]>([]);
 
