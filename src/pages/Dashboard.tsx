@@ -10,22 +10,18 @@ import {
   LogOut,
   User,
   Bell,
-  Award,
   Clock,
   CheckCircle,
   AlertCircle,
   Mail,
   Phone,
-  BookOpen,
-  Download,
-  Edit,
   Plus,
   ChevronLeft,
   Trash2,
   AlertTriangle,
+  Upload,
+  Receipt,
 } from "lucide-react";
-import ELMOCPC from "@/assets/ELMOCPC.svg";
-import CESA from "@/assets/CESA.svg";
 import { toast } from "sonner";
 
 // استور احراز هویت
@@ -41,7 +37,10 @@ import {
   deleteTeamService,
   getInvitesService,
   cancelInviteService,
+  uploadReceiptService,
 } from "@/services/teamService";
+
+import type { TeamInvite } from "@/types/teamTypes";
 
 // نوع ساده برای یوزر داخل داشبورد
 type DashboardUser = {
@@ -53,14 +52,20 @@ type DashboardUser = {
 };
 
 // تایپ TeamInvite براساس response واقعی
-type TeamInvite = {
-  id: string;
-  token: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  expires_at: string;
-};
+// type TeamInvite = {
+//   id: string;
+//   token: string;
+//   email: string;
+//   first_name: string;
+//   last_name: string;
+//   expires_at: string;
+//   data: {
+//     // ساختار داخلی data
+//     team_id?: number;
+//     role?: string;
+//     // سایر فیلدها
+//   };
+// };
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -79,6 +84,67 @@ function Dashboard() {
   const [deleting, setDeleting] = useState(false);
   const [deleteStep, setDeleteStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isCaptain, setIsCaptain] = useState(false);
+  const [daysLeft, setDaysLeft] = useState(0);
+  const [showFinalSubmitModal, setShowFinalSubmitModal] = useState(false);
+  const [submitStep, setSubmitStep] = useState(1);
+  // const [isSubmittingTeam, setIsSubmittingTeam] = useState(false);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [paymentInfo] = useState({
+    ticketPrice: 660000,
+    cardNumber: "6104-3387-4761-8581",
+    bankName: "بانک ملت مهدی تقی دولابی",
+  });
+  // تابع لغو فرآیند ثبت نهایی
+  const handleCancelSubmit = () => {
+    setShowFinalSubmitModal(false);
+    setSubmitStep(1);
+  };
+
+  // تابع شروع فرآیند تایید دو مرحله‌ای (همان قبلی)
+  const handleStartSubmitProcess = () => {
+    setShowFinalSubmitModal(true);
+    setSubmitStep(1);
+  };
+
+  const formatPrice = (price: number) => {
+    return (
+      new Intl.NumberFormat("fa-IR").format(price) + " هزار تومان  برای کل تیم"
+    );
+  };
+
+  const handleFileSelect = (file: File | null) => {
+    if (!file) return;
+
+    // بررسی نوع فایل
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "application/pdf",
+    ];
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    const isTypeAllowed =
+      allowedTypes.includes(file.type) ||
+      ["jpg", "jpeg", "png", "pdf"].includes(fileExtension || "");
+
+    if (!isTypeAllowed) {
+      toast.error("فرمت فایل مجاز نیست. فقط JPG, PNG, PDF قابل قبول است");
+      return;
+    }
+
+    // بررسی حجم فایل (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("حجم فایل باید کمتر از 5MB باشد");
+      return;
+    }
+
+    setSelectedFile(file);
+  };
 
   // تابع برای دریافت اطلاعات تیم
   const fetchTeamData = async () => {
@@ -96,6 +162,34 @@ function Dashboard() {
     }
   };
 
+  const handleUploadReceipt = async (file: File) => {
+    if (!teamData) return;
+
+    try {
+      setUploading(true);
+
+      // ایجاد FormData
+      const formData = new FormData();
+      formData.append("receipt", file);
+
+      console.log("آپلود فایل:", file.name, "برای تیم:", teamData.id);
+
+      // فراخوانی سرویس آپلود
+      await uploadReceiptService(teamData.id, formData);
+
+      toast.success("فیش پرداخت با موفقیت آپلود شد");
+      setShowUploadModal(false);
+      setSelectedFile(null);
+      setIsDragging(false);
+      await fetchTeamData(); // رفرش اطلاعات تیم
+    } catch (error: any) {
+      console.error("Error uploading receipt:", error);
+      toast.error(error?.message || "خطا در آپلود فیش");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   // تابع برای دریافت دعوت‌نامه‌ها
   const fetchInvites = async () => {
     if (!teamData) return;
@@ -104,6 +198,7 @@ function Dashboard() {
     try {
       const response = await getInvitesService(teamData.id);
       setInvites(response.data);
+      console.log("دریافت دعوت‌نامه‌ها:", response.data);
     } catch (error) {
       console.error("Error fetching invites:", error);
       setInvites([]);
@@ -123,6 +218,19 @@ function Dashboard() {
       toast.error(error?.message || "خطا در لغو دعوت");
     }
   };
+
+  function getRemainingMessage() {
+    // تاریخ امروز
+    const today = new Date();
+    const targetDate = new Date("2025-12-11");
+
+    const diffTime = targetDate.getTime() - today.getTime(); // ✔️ درست
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    setDaysLeft(diffDays);
+
+    return `${diffDays} روز تا پایان مهلت ثبت‌نام باقی مانده است`;
+  }
 
   // تابع برای تولید نوتیف‌ها براساس وضعیت تیم
   const getNotificationsBasedOnStatus = (
@@ -209,8 +317,9 @@ function Dashboard() {
       case "rejected":
         baseNotifications.push({
           id: 1,
-          title: "نیاز به اصلاح",
-          message: "تیم شما رد شده است. لطفا اطلاعات را اصلاح کنید",
+          title: "اطلاعات معتبر نیست",
+          message:
+            "تیم شما رد شده است. لطفا در صورت هرگونه ابهام با پشتبانی ارتباط بگیرید.",
           type: "error",
           date: today,
           read: false,
@@ -222,9 +331,9 @@ function Dashboard() {
       {
         id: 2,
         title: "مهلت ثبت‌نام",
-        message: "45 روز تا پایان مهلت ثبت‌نام باقی مانده است",
+        message: `${getRemainingMessage()} روز تا پایان مهلت ثبت‌نام باقی مانده است`,
         type: "info",
-        date: "1404/01/15",
+        date: today,
         read: true,
       },
       {
@@ -232,7 +341,7 @@ function Dashboard() {
         title: "اطلاعیه مسابقه",
         message: "جزئیات مرحله مقدماتی اعلام شد",
         type: "info",
-        date: "1404/01/10",
+        date: "۱۴۰۴/۰۹/۰۸",
         read: true,
       }
     );
@@ -260,6 +369,22 @@ function Dashboard() {
   }, [authUser, navigate]);
 
   useEffect(() => {
+    if (teamData && authUser) {
+      // بررسی اینکه آیا کاربر فعلی کاپیتان تیم هست یا نه
+      const captainStatus = teamData.creator_id === authUser.id;
+      setIsCaptain(captainStatus);
+      console.log(
+        "وضعیت کاپیتان:",
+        captainStatus,
+        "User ID:",
+        authUser.id,
+        "Creator ID:",
+        teamData.creator_id
+      );
+    }
+  }, [teamData, authUser]);
+
+  useEffect(() => {
     const newNotifications = getNotificationsBasedOnStatus(teamData);
     setNotifications(newNotifications);
   }, [teamData]);
@@ -269,6 +394,7 @@ function Dashboard() {
       fetchInvites();
     }
   }, [teamData]);
+  // console.log(teamData.status)
 
   const refreshTeamData = () => {
     fetchTeamData();
@@ -320,9 +446,11 @@ function Dashboard() {
     }
 
     try {
-      setSubmitting(true);
+      // setIsSubmittingTeam(true);
       await submitTeamService(teamData.id);
       toast.success("تیم با موفقیت ثبت نهایی شد!");
+      setShowFinalSubmitModal(false);
+      setSubmitStep(1);
       await fetchTeamData();
     } catch (error: any) {
       console.error("Error submitting team:", error);
@@ -332,7 +460,10 @@ function Dashboard() {
         "خطا در ثبت نهایی تیم";
 
       toast.error(errorMessage);
+      setShowFinalSubmitModal(false);
+      setSubmitStep(1);
     } finally {
+      // setIsSubmittingTeam(false);
       setSubmitting(false);
     }
   };
@@ -341,45 +472,24 @@ function Dashboard() {
     navigate("/buildteam");
   };
 
-  const handleEditTeam = () => {
-    if (teamData) {
-      navigate(`/edit-team/${teamData.id}`);
-    }
-  };
+  // const handleEditTeam = () => {
+  //   if (teamData) {
+  //     navigate(`/edit-team/${teamData.id}`);
+  //   }
+  // };
 
   const handleInviteMember = () => {
     if (teamData) {
-      navigate(`/invite-member/${teamData.id}`);
+      navigate(`/invitemember/`);
     }
   };
-
-  const upcomingEvents = [
-    {
-      title: "پایان ثبت‌نام",
-      date: "1404/02/30",
-      days: 45,
-      type: "deadline",
-    },
-    {
-      title: "مرحله مقدماتی",
-      date: "1404/03/15",
-      days: 60,
-      type: "competition",
-    },
-    {
-      title: "مرحله نهایی",
-      date: "1404/04/20",
-      days: 96,
-      type: "competition",
-    },
-  ];
 
   const menuItems = [
     { id: "overview", label: "خانه", icon: User },
     { id: "team", label: "تیم من", icon: Users },
     { id: "schedule", label: "برنامه مسابقات", icon: Calendar },
     { id: "notifications", label: "اطلاعیه‌ها", icon: Bell },
-    { id: "resources", label: "منابع آموزشی", icon: BookOpen },
+    // { id: "resources", label: "منابع آموزشی", icon: BookOpen },
     { id: "settings", label: "تنظیمات", icon: Settings },
   ];
 
@@ -523,7 +633,11 @@ function Dashboard() {
                     {userData.name} {userData.familyName}
                   </span>
                   <span className="text-[11px] text-gray-300">
-                    {teamData ? "کاپیتان تیم" : "عضو تیم"}
+                    {teamData
+                      ? isCaptain
+                        ? "کاپیتان تیم"
+                        : "عضو تیم"
+                      : "بدون تیم"}
                   </span>
                 </div>
                 <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
@@ -533,7 +647,6 @@ function Dashboard() {
             </div>
           </div>
         </header>
-
         <div className="p-6">
           {activeTab === "overview" && (
             <div className="space-y-6">
@@ -560,9 +673,7 @@ function Dashboard() {
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <Clock className="w-10 h-10 text-yellow-400" />
-                    <span className="text-3xl font-bold">
-                      {upcomingEvents[0].days}
-                    </span>
+                    <span className="text-3xl font-bold">{daysLeft}</span>
                   </div>
                   <h3 className="text-gray-300">روز تا مسابقه</h3>
                 </div>
@@ -581,12 +692,360 @@ function Dashboard() {
                   <h3 className="text-gray-300">وضعیت ثبت‌نام</h3>
                 </div>
               </div>
+              {teamData?.status === "waiting_for_payment" && (
+                <div className="bg-orange-500/10 backdrop-blur-md border border-orange-500/30 rounded-2xl p-6 space-y-6 mb-12">
+                  {/* عنوان */}
+                  <h3 className="text-xl font-bold flex items-center gap-2 text-orange-400">
+                    <Receipt className="w-6 h-6" />
+                    آپلود فیش پرداخت
+                  </h3>
+
+                  {/* اطلاعات پرداخت */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white/5 rounded-lg p-4">
+                      <p className="text-gray-400 text-sm mb-1">
+                        مبلغ قابل پرداخت
+                      </p>
+                      <p className="text-lg font-bold text-[#FFD500]">
+                        {formatPrice(paymentInfo.ticketPrice)}
+                      </p>
+                    </div>
+
+                    <div className="bg-white/5 rounded-lg p-4">
+                      <p className="text-gray-400 text-sm mb-1">شماره کارت</p>
+                      <p
+                        className="text-lg font-bold text-green-400 font-mono text-right"
+                        dir="ltr"
+                      >
+                        {paymentInfo.cardNumber}
+                      </p>
+                      <p className="text-gray-400 text-xs mt-1">
+                        {paymentInfo.bankName}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* متن راهنما */}
+                  <p className="text-gray-300 text-sm">
+                    لطفا پس از واریز مبلغ، فیش پرداخت را آپلود کنید.
+                  </p>
+
+                  {/* دکمه آپلود */}
+                  <Button
+                    onClick={() => setShowUploadModal(true)}
+                    className="flex items-center gap-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30 justify-center w-full md:w-auto"
+                  >
+                    <Upload className="w-5 h-5" />
+                    آپلود فیش
+                  </Button>
+                </div>
+              )}
+              {/* بخش اطلاع‌رسانی برای تمام وضعیت‌ها */}
+              {teamData?.status === "draft" && (
+                <div className="bg-yellow-500/10 backdrop-blur-md border border-yellow-500/30 rounded-2xl p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                      <AlertCircle className="w-6 h-6 text-yellow-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-yellow-400 mb-3">
+                        تیم در حالت پیش‌نویس
+                      </h3>
+                      <div className="space-y-3 text-gray-300">
+                        <p className="text-sm leading-relaxed">
+                          ثبت‌نام شما هنوز تکمیل نشده است. برای تکمیل فرآیند
+                          ثبت‌نام، لطفاً مراحل زیر را انجام دهید:
+                        </p>
+                        <ul className="space-y-2 text-sm mr-4">
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                            <span>اعضای تیم را دعوت کنید (حداقل ۳ نفر)</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                            <span>
+                              منتظر بمانید تا اعضای دعوت شده invitation را قبول
+                              کنند
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                            <span>
+                              پس از تکمیل اعضا، روی دکمه "ثبت نهایی تیم" کلیک
+                              کنید
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                            <span>
+                              پس از ثبت نهایی، منتظر تایید از سمت ادمین‌ها باشید
+                              سپس هزینه ثبت‌نام را پرداخت و فیش را آپلود کنید
+                            </span>
+                          </li>
+                        </ul>
+                        <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3 mt-3">
+                          <p className="text-xs text-yellow-400 font-medium">
+                            💡 توجه: تا زمانی که تیم در حالت پیش‌نویس است، امکان
+                            ویرایش اطلاعات تیم وجود دارد. پس از ثبت نهایی،
+                            ویرایش امکان‌پذیر نخواهد بود.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {teamData?.status === "submitted" && (
+                <div className="bg-blue-500/10 backdrop-blur-md border border-blue-500/30 rounded-2xl p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                      <Clock className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-blue-400 mb-3">
+                        تیم ثبت نهایی شده است
+                      </h3>
+                      <div className="space-y-3 text-gray-300">
+                        <p className="text-sm leading-relaxed">
+                          تیم شما با موفقیت ثبت نهایی شد. در حال حاضر وضعیت شما
+                          به شرح زیر است:
+                        </p>
+                        <ul className="space-y-2 text-sm mr-4">
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span>
+                              تیم شما برای بررسی به ادمین‌ها ارسال شده است
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span>
+                              لطفاً منتظر تایید نهایی از سوی ادمین‌ها باشید
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span>
+                              پس از تایید ادمین‌ها، می‌توانید هزینه ثبت‌نام را
+                              پرداخت کنید
+                            </span>
+                          </li>
+                        </ul>
+                        <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3 mt-3">
+                          <p className="text-xs text-blue-400 font-medium">
+                            ⏳ زمان بررسی معمولاً ۲۴ تا ۴۸ ساعت طول می‌کشد
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {teamData?.status === "waiting_for_payment" && (
+                <div className="bg-orange-500/10 backdrop-blur-md border border-orange-500/30 rounded-2xl p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                      <Receipt className="w-6 h-6 text-orange-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-orange-400 mb-3">
+                        در انتظار پرداخت
+                      </h3>
+                      <div className="space-y-3 text-gray-300">
+                        <p className="text-sm leading-relaxed">
+                          تیم شما توسط ادمین‌ها تایید شده است. لطفاً برای تکمیل
+                          ثبت‌نام:
+                        </p>
+                        <ul className="space-y-2 text-sm mr-4">
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                            <span>
+                              هزینه ثبت‌نام را به شماره کارت مشخص شده واریز کنید
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                            <span>
+                              پس از واریز، فیش پرداختی را در سیستم آپلود کنید
+                            </span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                            <span>
+                              پس از آپلود فیش، وضعیت شما به "در انتظار تایید
+                              فیش" تغییر خواهد کرد
+                            </span>
+                          </li>
+                        </ul>
+                        <div className="bg-orange-500/5 border border-orange-500/20 rounded-lg p-3 mt-3">
+                          <p className="text-xs text-orange-400 font-medium">
+                            💰 مبلغ قابل پرداخت:{" "}
+                            {formatPrice(paymentInfo.ticketPrice)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {teamData?.status === "receipt_pending" && (
+                <div className="bg-purple-500/10 backdrop-blur-md border border-purple-500/30 rounded-2xl p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                      <Upload className="w-6 h-6 text-purple-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-purple-400 mb-3">
+                        {teamData.receipt_image_url
+                          ? "فیش آپلود شده"
+                          : "در انتظار آپلود فیش"}
+                      </h3>
+                      <div className="space-y-3 text-gray-300">
+                        <p className="text-sm leading-relaxed">
+                          {teamData.receipt_image_url
+                            ? "فیش پرداختی شما با موفقیت آپلود شده است. وضعیت فعلی:"
+                            : "لطفاً برای تکمیل فرآیند ثبت‌نام:"}
+                        </p>
+                        <ul className="space-y-2 text-sm mr-4">
+                          {teamData.receipt_image_url ? (
+                            <>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                <span>
+                                  فیش پرداختی شما توسط ادمین‌ها در حال بررسی است
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                <span>
+                                  پس از تایید فیش، وضعیت شما به "تایید شده"
+                                  تغییر خواهد کرد
+                                </span>
+                              </li>
+                            </>
+                          ) : (
+                            <>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                <span>
+                                  هزینه ثبت‌نام را واریز کرده و فیش را آپلود
+                                  کنید
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                <span>فرمت‌های قابل قبول: JPG, PNG, PDF</span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                <span>حداکثر حجم فایل: 5MB</span>
+                              </li>
+                            </>
+                          )}
+                        </ul>
+                        {!teamData.receipt_image_url && (
+                          <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3 mt-3">
+                            <p className="text-xs text-purple-400 font-medium">
+                              📎 برای آپلود فیش از دکمه "آپلود فیش" استفاده کنید
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {teamData?.status === "accepted" && (
+                <div className="bg-green-500/10 backdrop-blur-md border border-green-500/30 rounded-2xl p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                      <CheckCircle className="w-6 h-6 text-green-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-green-400 mb-3">
+                        تیم تایید شده است
+                      </h3>
+                      <div className="space-y-3 text-gray-300">
+                        <p className="text-sm leading-relaxed">
+                          تبریک! ثبت‌نام شما با موفقیت تکمیل شد. وضعیت فعلی شما:
+                        </p>
+                        <ul className="space-y-2 text-sm mr-4">
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span>
+                              تیم شما برای شرکت در مسابقه تایید شده است
+                            </span>
+                          </li>
+                        
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span>
+                              منتظر اطلاعیه‌های بعدی برای زمان مسابقه باشید
+                            </span>
+                          </li>
+                        </ul>
+                        <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3 mt-3">
+                          <p className="text-xs text-green-400 font-medium">
+                            🎉 موفق باشید در مسابقه!
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {teamData?.status === "rejected" && (
+                <div className="bg-red-500/10 backdrop-blur-md border border-red-500/30 rounded-2xl p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                      <AlertTriangle className="w-6 h-6 text-red-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-red-400 mb-3">
+                        تیم رد شده است
+                      </h3>
+                      <div className="space-y-3 text-gray-300">
+                        <p className="text-sm leading-relaxed">
+                          متأسفانه تیم شما توسط ادمین‌ها رد شده است. دلایل
+                          احتمالی:
+                        </p>
+                        <ul className="space-y-2 text-sm mr-4">
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                            <span>مشکل در اطلاعات اعضای تیم</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                            <span>فیش پرداختی نامعتبر</span>
+                          </li>
+                          <li className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                            <span>عدم رعایت قوانین مسابقه</span>
+                          </li>
+                        </ul>
+                        <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3 mt-3">
+                          <p className="text-xs text-red-400 font-medium">
+                            📞 در صورت نیاز به اطلاعات بیشتر با پشتیبانی تماس
+                            بگیرید
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                   <Bell className="w-6 h-6 text-[#FFD500]" />
                   آخرین اطلاعیه‌ها
                 </h3>
+
                 <div className="space-y-3">
                   {notifications.slice(0, 3).map((notification) => (
                     <div
@@ -629,7 +1088,7 @@ function Dashboard() {
                 </div>
               </div>
 
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
+              {/* <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                   <Calendar className="w-6 h-6 text-[#FFD500]" />
                   رویدادهای پیش‌رو
@@ -655,7 +1114,7 @@ function Dashboard() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
 
@@ -692,12 +1151,29 @@ function Dashboard() {
                           )}
                         </div>
                       </div>
+
+                      {/* بخش اطلاع‌رسانی برای اعضای غیرکاپیتان */}
+                      {teamData && !isCaptain && (
+                        <div className="bg-blue-500/10 backdrop-blur-md border border-blue-500/30 rounded-2xl p-6">
+                          <div className="flex items-center gap-3">
+                            <Users className="w-6 h-6 text-blue-400" />
+                            <div>
+                              <h3 className="font-bold text-blue-400 mb-2">
+                                شما عضو تیم هستید
+                              </h3>
+                              <p className="text-gray-300 text-sm">
+                                برای تغییرات در تیم (ثبت نهایی، دعوت عضو، حذف
+                                تیم) با کاپیتان تیم تماس بگیرید.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       <div className="flex gap-3 flex-wrap">
-                        {(teamData.status === "draft" ||
-                          teamData.status === "rejected") && (
+                        {teamData.status === "draft" && (
                           <Button
-                            onClick={handleSubmitTeam}
-                            disabled={submitting}
+                            onClick={handleStartSubmitProcess}
+                            disabled={submitting || !isCaptain}
                             className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 disabled:opacity-50"
                           >
                             {submitting ? (
@@ -709,35 +1185,61 @@ function Dashboard() {
                           </Button>
                         )}
 
-                        <Button
-                          onClick={handleEditTeam}
-                          className="bg-white/10 hover:bg-white/20 text-white"
-                        >
-                          <Edit className="w-5 h-5 ml-2" />
-                          ویرایش تیم
-                        </Button>
+                        {(!invites || invites.length !== 2) &&
+                          (teamData.status === "draft" || !teamData) && (
+                            <Button
+                              onClick={handleInviteMember}
+                              disabled={!isCaptain}
+                              className="bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30"
+                            >
+                              <Plus className="w-5 h-5 ml-2" />
+                              دعوت عضو
+                            </Button>
+                          )}
 
-                        {(teamData.status === "submitted" ||
-                          teamData.status === "accepted") && (
-                          <Button
-                            onClick={handleInviteMember}
-                            className="bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30"
-                          >
-                            <Plus className="w-5 h-5 ml-2" />
-                            دعوت عضو
-                          </Button>
+                        {/* بخش آپلود فیش در تیم من */}
+                        {teamData &&
+                          teamData.status === "waiting_for_payment" && (
+                            <div className="bg-orange-500/10 backdrop-blur-md border border-orange-500/30 rounded-2xl p-6">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-orange-400">
+                                    <Receipt className="w-6 h-6" />
+                                    آپلود فیش پرداخت
+                                  </h3>
+                                  <p className="text-gray-300 ml-12">
+                                    وضعیت: در انتظار آپلود فیش پرداخت
+                                  </p>
+                                </div>
+                                <Button
+                                  onClick={() => setShowUploadModal(true)}
+                                  disabled={!isCaptain}
+                                  className="bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30"
+                                >
+                                  <Upload className="w-5 h-5 ml-2" />
+                                  آپلود فیش
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        {teamData.status == "rejected" && (
+                          <p className="text-red-400 ml-4">
+                            تیم شما رد شده است. لطفا دوباره اکانت بسازید یا با
+                            پشتیبانی در ارتباط باشید.
+                          </p>
                         )}
 
-                        {teamData.status === "accepted" && (
+                        {/* {teamData.status === "accepted" && (
                           <Button className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D]">
                             <Download className="w-5 h-5 ml-2" />
                             دانلود کارت شرکت
                           </Button>
-                        )}
+                        )} */}
 
-                        {teamData.status !== "accepted" && (
+                        {teamData.status === "draft" && (
                           <Button
                             onClick={handleDeleteClick}
+                            disabled={!isCaptain || deleting}
                             className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30"
                           >
                             <Trash2 className="w-5 h-5 ml-2" />
@@ -747,7 +1249,425 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
+                  {/* بخش اطلاع‌رسانی برای تمام وضعیت‌ها */}
+                  {teamData.status === "draft" && (
+                    <div className="bg-yellow-500/10 backdrop-blur-md border border-yellow-500/30 rounded-2xl p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                          <AlertCircle className="w-6 h-6 text-yellow-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-yellow-400 mb-3">
+                            تیم در حالت پیش‌نویس
+                          </h3>
+                          <div className="space-y-3 text-gray-300">
+                            <p className="text-sm leading-relaxed">
+                              ثبت‌نام شما هنوز تکمیل نشده است. برای تکمیل فرآیند
+                              ثبت‌نام، لطفاً مراحل زیر را انجام دهید:
+                            </p>
+                            <ul className="space-y-2 text-sm mr-4">
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                <span>
+                                  اعضای تیم را دعوت کنید (حداکثر ۳ نفر)
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                <span>
+                                  منتظر بمانید تا اعضای دعوت شده invitation را
+                                  قبول کنند
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                <span>
+                                  پس از تکمیل اعضا، روی دکمه "ثبت نهایی تیم"
+                                  کلیک کنید
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                <span>
+                                  پس از ثبت نهایی، منتظر تایید از سمت ادمین‌ها
+                                  باشید سپس هزینه ثبت‌نام را پرداخت و فیش را
+                                  آپلود کنید
+                                </span>
+                              </li>
+                            </ul>
+                            <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-lg p-3 mt-3">
+                              <p className="text-xs text-yellow-400 font-medium">
+                                💡 توجه: تا زمانی که تیم در حالت پیش‌نویس است،
+                                امکان ویرایش اطلاعات تیم وجود دارد. پس از ثبت
+                                نهایی، ویرایش امکان‌پذیر نخواهد بود.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {showFinalSubmitModal && (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                      <div className="bg-[#00274D] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-xl">
+                        {submitStep === 1 ? (
+                          <>
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                <AlertCircle className="w-6 h-6 text-blue-400" />
+                              </div>
+                              <h3 className="text-lg font-bold">
+                                تایید ثبت نهایی تیم
+                              </h3>
+                            </div>
 
+                            <div className="space-y-4 mb-6">
+                              <p className="text-gray-300">
+                                آیا از ثبت نهایی تیم{" "}
+                                <span className="text-[#FFD500] font-semibold">
+                                  {teamData?.name}
+                                </span>{" "}
+                                مطمئن هستید؟
+                              </p>
+
+                              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                                <div className="flex items-start gap-3">
+                                  <AlertTriangle className="w-5 h-5 text-yellow-400 mt-0.5" />
+                                  <div>
+                                    <h4 className="font-bold text-yellow-400 text-sm mb-1">
+                                      توجه مهم!
+                                    </h4>
+                                    <ul className="text-xs text-yellow-300 space-y-1">
+                                      <li>
+                                        • پس از ثبت نهایی، امکان ویرایش تیم وجود
+                                        نخواهد داشت
+                                      </li>
+                                      <li>
+                                        • امکان دعوت عضو جدید غیرفعال می‌شود
+                                      </li>
+                                      <li>• این عمل غیرقابل بازگشت است</li>
+                                      <li>
+                                        • تیم را تکمیل و سپس برای نهایی کردن
+                                        اقدام کنید
+                                      </li>
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm text-gray-300">
+                                    اعضای فعلی:
+                                  </span>
+                                  <span className="font-bold">
+                                    {teamData?.members?.length || 0} نفر
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                              <Button
+                                onClick={handleCancelSubmit}
+                                className="flex-1 bg-white/10 hover:bg-white/20 text-white"
+                              >
+                                انصراف
+                              </Button>
+                              <Button
+                                onClick={handleSubmitTeam}
+                                disabled={invites?.length > 0}
+                                className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 disabled:opacity-50"
+                              >
+                                {invites?.length > 0
+                                  ? "دعوت‌های در انتظار دارید"
+                                  : "ادامه"}
+                              </Button>
+                            </div>
+                          </>
+                        ) : null}
+                      </div>
+                    </div>
+                  )}
+
+                  {teamData.status === "submitted" && (
+                    <div className="bg-blue-500/10 backdrop-blur-md border border-blue-500/30 rounded-2xl p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                          <Clock className="w-6 h-6 text-blue-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-blue-400 mb-3">
+                            تیم ثبت نهایی شده است
+                          </h3>
+                          <div className="space-y-3 text-gray-300">
+                            <p className="text-sm leading-relaxed">
+                              تیم شما با موفقیت ثبت نهایی شد. در حال حاضر وضعیت
+                              شما به شرح زیر است:
+                            </p>
+                            <ul className="space-y-2 text-sm mr-4">
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                <span>
+                                  تیم شما برای بررسی به ادمین‌ها ارسال شده است
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                <span>
+                                  لطفاً منتظر تایید نهایی از سوی ادمین‌ها باشید
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                <span>
+                                  پس از تایید ادمین‌ها، می‌توانید هزینه ثبت‌نام
+                                  را پرداخت کنید
+                                </span>
+                              </li>
+                            </ul>
+                            <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3 mt-3">
+                              <p className="text-xs text-blue-400 font-medium">
+                                ⏳ زمان بررسی معمولاً ۱ تا ۶ ساعت طول می‌کشد
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {teamData.status === "waiting_for_payment" && (
+                    <div className="bg-orange-500/10 backdrop-blur-md border border-orange-500/30 rounded-2xl p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                          <Receipt className="w-6 h-6 text-orange-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-orange-400 mb-3">
+                            در انتظار پرداخت
+                          </h3>
+                          <div className="space-y-3 text-gray-300">
+                            <p className="text-sm leading-relaxed">
+                              تیم شما توسط ادمین‌ها تایید شده است. لطفاً برای
+                              تکمیل ثبت‌نام:
+                            </p>
+                            <ul className="space-y-2 text-sm mr-4">
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                                <span>
+                                  هزینه ثبت‌نام را به شماره کارت مشخص شده واریز
+                                  کنید
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                                <span>
+                                  پس از واریز، فیش پرداختی را در سیستم آپلود
+                                  کنید
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                                <span>
+                                  پس از آپلود فیش، وضعیت شما به "در انتظار تایید
+                                  فیش" تغییر خواهد کرد
+                                </span>
+                              </li>
+                            </ul>
+                            <div className="bg-orange-500/5 border border-orange-500/20 rounded-lg p-3 mt-3">
+                              <p className="text-xs text-orange-400 font-medium">
+                                💰 مبلغ قابل پرداخت:{" "}
+                                {formatPrice(paymentInfo.ticketPrice)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {teamData.status === "receipt_pending" && (
+                    <div className="bg-purple-500/10 backdrop-blur-md border border-purple-500/30 rounded-2xl p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                          <Upload className="w-6 h-6 text-purple-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-purple-400 mb-3">
+                            {teamData.receipt_image_url
+                              ? "فیش آپلود شده"
+                              : "در انتظار آپلود فیش"}
+                          </h3>
+                          <div className="space-y-3 text-gray-300">
+                            <p className="text-sm leading-relaxed">
+                              {teamData.receipt_image_url
+                                ? "فیش پرداختی شما با موفقیت آپلود شده است. وضعیت فعلی:"
+                                : "لطفاً برای تکمیل فرآیند ثبت‌نام:"}
+                            </p>
+                            <ul className="space-y-2 text-sm mr-4">
+                              {teamData.receipt_image_url ? (
+                                <>
+                                  <li className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                    <span>
+                                      فیش پرداختی شما توسط ادمین‌ها در حال بررسی
+                                      است
+                                    </span>
+                                  </li>
+                                  <li className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                    <span>
+                                      پس از تایید فیش، وضعیت شما به "تایید شده"
+                                      تغییر خواهد کرد
+                                    </span>
+                                  </li>
+                                </>
+                              ) : (
+                                <>
+                                  <li className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                    <span>
+                                      هزینه ثبت‌نام را واریز کرده و فیش را آپلود
+                                      کنید
+                                    </span>
+                                  </li>
+                                  <li className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                    <span>
+                                      فرمت‌های قابل قبول: JPG, PNG, PDF
+                                    </span>
+                                  </li>
+                                  <li className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                                    <span>حداکثر حجم فایل: 5MB</span>
+                                  </li>
+                                </>
+                              )}
+                            </ul>
+                            {!teamData.receipt_image_url && (
+                              <div className="bg-purple-500/5 border border-purple-500/20 rounded-lg p-3 mt-3">
+                                <p className="text-xs text-purple-400 font-medium">
+                                  📎 برای آپلود فیش از دکمه "آپلود فیش" استفاده
+                                  کنید
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* اطلاعات پرداخت */}
+                  {teamData.status === "waiting_for_payment" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-white/5 rounded-lg p-4">
+                        <p className="text-gray-400 text-sm mb-1">
+                          مبلغ قابل پرداخت
+                        </p>
+                        <p className="text-lg font-bold text-[#FFD500]">
+                          {formatPrice(paymentInfo.ticketPrice)}
+                        </p>
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-4">
+                        <p className="text-gray-400 text-sm mb-1">شماره کارت</p>
+                        <p
+                          className="text-lg font-bold text-green-400 font-mono text-right"
+                          dir="ltr"
+                        >
+                          {paymentInfo.cardNumber}
+                        </p>
+                        <p className="text-gray-400 text-xs mt-1">
+                          {paymentInfo.bankName}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {teamData?.status === "accepted" && (
+                    <div className="bg-green-500/10 backdrop-blur-md border border-green-500/30 rounded-2xl p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                          <CheckCircle className="w-6 h-6 text-green-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-green-400 mb-3">
+                            تیم تایید شده است
+                          </h3>
+                          <div className="space-y-3 text-gray-300">
+                            <p className="text-sm leading-relaxed">
+                              تبریک! ثبت‌نام شما با موفقیت تکمیل شد. وضعیت فعلی
+                              شما:
+                            </p>
+                            <ul className="space-y-2 text-sm mr-4">
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                <span>
+                                  تیم شما برای شرکت در مسابقه تایید شده است
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                <span>
+                                  ۲۱ آذر ساعت ۸ صبح در محل مسابقه حضور داشته
+                                  باشید
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                <span>
+                                  منتظر اطلاعیه‌های بعدی برای زمان مسابقه باشید
+                                </span>
+                              </li>
+                            </ul>
+                            <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3 mt-3">
+                              <p className="text-xs text-green-400 font-medium">
+                                🎉 موفق باشید در مسابقه!
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {teamData?.status === "rejected" && (
+                    <div className="bg-red-500/10 backdrop-blur-md border border-red-500/30 rounded-2xl p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                          <AlertTriangle className="w-6 h-6 text-red-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-red-400 mb-3">
+                            تیم رد شده است
+                          </h3>
+                          <div className="space-y-3 text-gray-300">
+                            <p className="text-sm leading-relaxed">
+                              متأسفانه تیم شما توسط ادمین‌ها رد شده است. دلایل
+                              احتمالی:
+                            </p>
+                            <ul className="space-y-2 text-sm mr-4">
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                                <span>مشکل در اطلاعات اعضای تیم</span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                                <span>فیش پرداختی نامعتبر</span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                                <span>عدم رعایت قوانین مسابقه</span>
+                              </li>
+                            </ul>
+                            <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-3 mt-3">
+                              <p className="text-xs text-red-400 font-medium">
+                                📞 در صورت نیاز به اطلاعات بیشتر با پشتیبانی
+                                تماس بگیرید
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {showDeleteModal && (
                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                       <div className="bg-[#00274D] border border-white/10 rounded-2xl p-6 max-w-md w-full">
@@ -845,23 +1765,23 @@ function Dashboard() {
                       </div>
                     </div>
                   )}
-
                   {invitesLoading ? (
-                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:p-6">
                       <div className="flex items-center justify-center py-4">
-                        <div className="w-6 h-6 border-2 border-[#FFD500]/30 border-t-[#FFD500] rounded-full animate-spin" />
-                        <span className="mr-2">
+                        <div className="w-5 h-5 md:w-6 md:h-6 border-2 border-[#FFD500]/30 border-t-[#FFD500] rounded-full animate-spin" />
+                        <span className="mr-2 text-sm md:text-base">
                           درحال بارگذاری دعوت‌نامه‌ها...
                         </span>
                       </div>
                     </div>
                   ) : (
-                    invites?.length > 0 && (
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-[#FFD500]">
-                          <Bell className="w-6 h-6" />
+                    invites?.length > 0 &&
+                    isCaptain && (
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:p-6">
+                        <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 flex items-center gap-2 text-[#FFD500]">
+                          <Bell className="w-5 h-5 md:w-6 md:h-6" />
                           دعوت‌نامه‌های در انتظار پاسخ
-                          <span className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full text-sm">
+                          <span className="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full text-xs md:text-sm">
                             {invites.length} دعوت
                           </span>
                         </h3>
@@ -869,20 +1789,20 @@ function Dashboard() {
                           {invites.map((invite) => (
                             <div
                               key={invite.id}
-                              className="flex items-center justify-between p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl"
+                              className="flex flex-col sm:flex-row sm:items-center justify-between p-3 md:p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl gap-3"
                             >
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center">
-                                  <Clock className="w-5 h-5 text-yellow-400" />
+                              <div className="flex items-center gap-3 flex-1">
+                                <div className="w-8 h-8 md:w-10 md:h-10 bg-yellow-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                                  <Clock className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
                                 </div>
-                                <div>
-                                  <h4 className="font-semibold">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-semibold text-sm md:text-base truncate">
                                     {invite.first_name} {invite.last_name}
                                   </h4>
-                                  <p className="text-sm text-gray-300">
+                                  <p className="text-xs md:text-sm text-gray-300 truncate">
                                     {invite.email}
                                   </p>
-                                  <p className="text-xs text-gray-400">
+                                  <p className="text-xs text-gray-400 mt-1">
                                     انقضا:{" "}
                                     {new Date(
                                       invite.expires_at
@@ -890,16 +1810,20 @@ function Dashboard() {
                                   </p>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-yellow-400 text-sm">
+                              <div className="flex items-center gap-2 justify-between sm:justify-end">
+                                <span className="text-yellow-400 text-xs md:text-sm whitespace-nowrap">
                                   در انتظار پاسخ
                                 </span>
                                 <Button
                                   size="sm"
                                   onClick={() =>
-                                    handleCancelInvite(invite.token.toString(), teamData.id.toString())
+                                    handleCancelInvite(
+                                      invite.token.toString(),
+                                      teamData.id.toString()
+                                    )
                                   }
-                                  className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30"
+                                  disabled={invitesLoading || !isCaptain}
+                                  className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 text-xs md:text-sm px-2 md:px-3 py-1 md:py-2"
                                 >
                                   لغو دعوت
                                 </Button>
@@ -910,7 +1834,6 @@ function Dashboard() {
                       </div>
                     )
                   )}
-
                   <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
                     <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-[#FFD500]">
                       <Users className="w-6 h-6" />
@@ -932,7 +1855,7 @@ function Dashboard() {
                                 {member.name} {member.familyName}
                               </h3>
                               <span className="text-sm text-[#FFD500]">
-                                {index === 0 ? "کاپیتان" : member.role}
+                                {index === 0 ? "کاپیتان" : "عضو تیم"}
                               </span>
                             </div>
                           </div>
@@ -954,16 +1877,6 @@ function Dashboard() {
                       ))}
                     </div>
                   </div>
-
-                  <div className="text-center">
-                    <Button
-                      onClick={refreshTeamData}
-                      className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-semibold py-3 px-6 rounded-lg transition-all duration-200"
-                    >
-                      بروزرسانی اطلاعات تیم
-                    </Button>
-                  </div>
-
                   {/* دکمه رفرش */}
                   <div className="text-center">
                     <Button
@@ -1007,27 +1920,17 @@ function Dashboard() {
                   {[
                     {
                       title: "ثبت‌نام",
-                      date: "1404/01/15 - 1404/02/30",
+                      date: "۱۴۰۴/۰۹/۰۹-۱۴۰۴/۰۹/۱۵",
                       status: "active",
                     },
                     {
-                      title: "مرحله مقدماتی",
-                      date: "1404/03/15",
-                      status: "upcoming",
-                    },
-                    {
-                      title: "اعلام نتایج مقدماتی",
-                      date: "1404/03/20",
-                      status: "upcoming",
-                    },
-                    {
-                      title: "مرحله نهایی",
-                      date: "1404/04/20",
+                      title: " مسابقه",
+                      date: "۱۴۰۴/۰۹/۲۱ ساعت ۸:۰۰",
                       status: "upcoming",
                     },
                     {
                       title: "مراسم اهدای جوایز",
-                      date: "1404/04/25",
+                      date: "۱۴۰۴/۰۹/۲۱ ساعت ۱۶:۰۰",
                       status: "upcoming",
                     },
                   ].map((item, index) => (
@@ -1113,7 +2016,7 @@ function Dashboard() {
           )}
 
           {/* Resources Tab */}
-          {activeTab === "resources" && (
+          {/* {activeTab === "resources" && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {[
@@ -1144,7 +2047,7 @@ function Dashboard() {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Settings Tab */}
           {activeTab === "settings" && (
@@ -1170,20 +2073,124 @@ function Dashboard() {
                     </label>
                     <p className="text-lg font-semibold">{userData.phone}</p>
                   </div>
-                  <Button className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] mt-4">
+                  {/* <Button className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] mt-4">
                     <Edit className="w-5 h-5 ml-2" />
                     ویرایش اطلاعات
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
           )}
         </div>
-
-        <div className="fixed bottom-4 right-4 left-4 flex justify-between items-center pointer-events-none">
+        {/* <div className="fixed bottom-4 right-4 left-4 flex justify-between items-center pointer-events-none">
           <img src={CESA} alt="CESA Logo" className="w-16 opacity-50" />
           <img src={ELMOCPC} alt="ELMOCPC Logo" className="w-24 opacity-50" />
-        </div>
+        </div> */}
+        {showUploadModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-[#00274D] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-xl">
+              {/* عنوان */}
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                  <Upload className="w-6 h-6 text-orange-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white">
+                  آپلود فیش پرداخت
+                </h3>
+              </div>
+
+              {/* Dropzone */}
+              <div
+                onDragEnter={(e) => {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragOver={(e) => e.preventDefault()}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) {
+                    handleFileSelect(file);
+                  }
+                }}
+                className={`
+          border-2 border-dashed rounded-xl p-6 min-h-[200px] 
+          flex flex-col items-center justify-center cursor-pointer transition
+          ${
+            isDragging
+              ? "border-orange-400 bg-orange-500/10"
+              : "border-orange-500/30"
+          }
+        `}
+                onClick={() =>
+                  document.getElementById("receipt-input")?.click()
+                }
+              >
+                <Receipt className="w-12 h-12 text-orange-400 mb-3" />
+
+                {!selectedFile ? (
+                  <>
+                    <p className="text-gray-200 mb-1">فایل را اینجا رها کنید</p>
+                    <p className="text-sm text-gray-400">
+                      یا کلیک کنید برای انتخاب
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-green-300 font-medium">
+                    {selectedFile.name} انتخاب شد ✔
+                  </p>
+                )}
+
+                <input
+                  id="receipt-input"
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setSelectedFile(file);
+                  }}
+                />
+              </div>
+
+              {/* توضیحات */}
+              <div className="text-xs text-gray-400 mt-4 mb-6 text-center leading-relaxed">
+                <p>فرمت‌های قابل قبول: JPG, PNG, PDF</p>
+                <p>حداکثر حجم: 5MB</p>
+              </div>
+
+              {/* دکمه‌ها */}
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setShowUploadModal(false)}
+                  className="flex-1 bg-white/10 hover:bg-white/20 text-white"
+                  disabled={uploading}
+                >
+                  انصراف
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    if (selectedFile) handleUploadReceipt(selectedFile);
+                  }}
+                  className="flex-1 bg-orange-500/20 text-orange-400 border border-orange-500/30 hover:bg-orange-500/30"
+                  disabled={!selectedFile || uploading}
+                >
+                  {uploading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin ml-2" />
+                      در حال آپلود...
+                    </>
+                  ) : (
+                    "آپلود فایل"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
