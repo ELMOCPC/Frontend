@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="پنجمین دوره مسابقات برنامه‌نویسی دانشجویی دانشگاه علم و صنعت — ELMOCPC 2025"
+    />
+    <title>ELMOCPC 2025 — دعوت عضو جدید</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Auth shell (G5): centered card over BG.png, corner logos, no global nav -->
+    <main class="auth-page">
+      <section class="auth-card auth-card-2xl" aria-labelledby="invite-title">
+        <header class="form-header">
+          <span class="form-icon">
+            <svg
+              class="icon-lg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" x2="19" y1="8" y2="14" />
+              <line x1="22" x2="16" y1="11" y2="11" />
+            </svg>
+          </span>
+          <h1 class="form-title" id="invite-title">دعوت عضو جدید</h1>
+          <p class="form-desc">
+            اطلاعات عضو جدید را وارد کنید تا دعوت‌نامه برای او ارسال شود
+          </p>
+        </header>
+
+        <form>
+          <div class="form-stack">
+            <div class="form-grid">
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="invite-name"
+                  name="name"
+                  type="text"
+                  placeholder=" "
+                  autocomplete="given-name"
+                />
+                <label class="fl-label" for="invite-name">نام</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="invite-family"
+                  name="family"
+                  type="text"
+                  placeholder=" "
+                  autocomplete="family-name"
+                />
+                <label class="fl-label" for="invite-family">نام خانوادگی</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="invite-email"
+                  name="email"
+                  type="email"
+                  placeholder=" "
+                  autocomplete="email"
+                />
+                <label class="fl-label" for="invite-email">ایمیل</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="invite-phone"
+                  name="phone"
+                  type="tel"
+                  placeholder=" "
+                  autocomplete="tel"
+                />
+                <label class="fl-label" for="invite-phone">شماره موبایل</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="invite-university"
+                  name="university"
+                  type="text"
+                  placeholder=" "
+                />
+                <label class="fl-label" for="invite-university">نام دانشگاه</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="invite-national-id"
+                  name="national_id"
+                  type="text"
+                  placeholder=" "
+                />
+                <label class="fl-label" for="invite-national-id">کد ملی</label>
+              </div>
+
+              <div class="field">
+                <label class="label" for="invite-tshirt">سایز تیشرت</label>
+                <span class="select">
+                  <select id="invite-tshirt" name="tshirt">
+                    <option value="">سایز تیشرت را انتخاب کنید</option>
+                    <option value="M" selected>M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                  </select>
+                  <svg
+                    class="select-chevron icon-sm"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <div class="form-actions form-actions-fill">
+              <button class="btn btn-yellow btn-lg" type="submit">
+                ارسال دعوت
+              </button>
+              <button class="btn btn-ghost btn-lg" type="button">بازگشت</button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <a href="index.html">
+        <img
+          class="corner-logo corner-logo-start"
+          src="../../src/assets/ELMOCPC.svg"
+          alt="ELMOCPC"
+        />
+      </a>
+      <img
+        class="corner-logo corner-logo-end"
+        src="../../src/assets/CESA.svg"
+        alt="CESA"
+      />
+    </main>
+  </body>
+</html>

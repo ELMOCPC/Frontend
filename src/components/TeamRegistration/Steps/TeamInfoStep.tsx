@@ -1,8 +1,6 @@
 // src/pages/TeamRegistration/components/Steps/TeamInfoStep.tsx
-import { Formik, Form } from "formik";
-import { Users, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import CustomInput from "@/components/Custom/CustomInput";
+import { Formik, Form, Field, type FieldProps } from "formik";
+import { Users } from "lucide-react";
 import FormHeader from "../Common/FormHeader";
 import * as Yup from "yup";
 
@@ -45,30 +43,74 @@ const TeamInfoStep = ({
             description="نام و توضیحات تیم خود را وارد کنید"
           />
 
-          <div className="space-y-6">
-            <CustomInput
-              name="teamName"
-              type="text"
-              label="نام تیم"
-              className="w-full px-4 py-3 rounded-lg text-lg"
-              autoFocus
-            />
+          <div className="form-stack">
+            <Field name="teamName">
+              {({ field, meta }: FieldProps) => {
+                const hasError = meta.touched && !!meta.error;
 
-            <CustomInput
-              name="teamDescription"
-              type="text"
-              label="توضیحات تیم (اختیاری)"
-              className="w-full px-4 py-3 rounded-lg"
-            />
+                return (
+                  <div>
+                    <div className="fl">
+                      <input
+                        {...field}
+                        id="team-name"
+                        type="text"
+                        placeholder=" "
+                        autoFocus
+                        className="input fl-control"
+                        aria-invalid={hasError}
+                      />
+                      <label className="fl-label" htmlFor="team-name">
+                        نام تیم
+                      </label>
+                    </div>
+                    {hasError && (
+                      <span className="field-error">
+                        {meta.error as string}
+                      </span>
+                    )}
+                  </div>
+                );
+              }}
+            </Field>
 
-            <Button
-              type="submit"
-              disabled={formSubmitting || isSubmitting}
-              className="w-full bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-semibold py-4 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#FFD500]/50 active:scale-95"
-            >
-              {formSubmitting || isSubmitting ? "در حال ایجاد تیم..." : "ادامه"}
-              <ArrowRight className="w-5 h-5 mr-2 inline-block" />
-            </Button>
+            <Field name="teamDescription">
+              {({ field, meta }: FieldProps) => {
+                const hasError = meta.touched && !!meta.error;
+
+                return (
+                  <div>
+                    <div className="fl">
+                      <textarea
+                        {...field}
+                        id="team-desc"
+                        placeholder=" "
+                        className="textarea fl-control"
+                        aria-invalid={hasError}
+                      />
+                      <label className="fl-label" htmlFor="team-desc">
+                        توضیحات تیم (اختیاری)
+                      </label>
+                    </div>
+                    {hasError && (
+                      <span className="field-error">
+                        {meta.error as string}
+                      </span>
+                    )}
+                  </div>
+                );
+              }}
+            </Field>
+
+            <div className="form-actions">
+              <button
+                type="submit"
+                className="btn btn-yellow btn-lg btn-block"
+                disabled={formSubmitting || isSubmitting}
+              >
+                {formSubmitting || isSubmitting ? "در حال ایجاد تیم..." : "ادامه"}
+              </button>
+            </div>
           </div>
         </Form>
       )}

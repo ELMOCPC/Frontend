@@ -1,129 +1,112 @@
-// src/pages/LandingPage/components/Sections/TimelineSection.tsx
-import { useState } from "react";
-import SectionHeader from "../Common/SectionHeader";
-import TimelineItem from "../Common/TimelineItem";
+// src/components/Landing/Sections/TimelineSection.tsx
+type TimelineStatus = "done" | "active" | "upcoming";
 
 interface TimelineEvent {
   date: string;
   title: string;
-  status: "completed" | "active" | "upcoming";
-  description?: string;
+  status: TimelineStatus;
+  badge: string;
+  badgeClass: string;
+  description: string;
 }
 
+const timeline: TimelineEvent[] = [
+  {
+    date: "۱ تا ۵ آذر ۱۴۰۴",
+    title: "ثبت نام بوت کمپ",
+    status: "done",
+    badge: "تکمیل شده",
+    badgeClass: "badge-success",
+    description: "ثبت‌نام در کارگاه‌های آموزشی آمادگی برای مسابقه",
+  },
+  {
+    date: "۷ آذر ۱۴۰۴",
+    title: "شروع ثبت‌نام مسابقه",
+    status: "active",
+    badge: "در جریان",
+    badgeClass: "badge-warning",
+    description: "شروع فرآیند ثبت‌نام برای مسابقه اصلی",
+  },
+  {
+    date: "۱۵ آذر ۱۴۰۴",
+    title: "پایان مهلت ثبت‌نام",
+    status: "upcoming",
+    badge: "پیش رو",
+    badgeClass: "badge-neutral",
+    description: "آخرین فرصت برای ثبت‌نام در مسابقه",
+  },
+  {
+    date: "۱۸ آذر ۱۴۰۴",
+    title: "اعلام لیست نهایی تیم‌ها",
+    status: "upcoming",
+    badge: "پیش رو",
+    badgeClass: "badge-neutral",
+    description: "اعلام اسامی تیم‌های واجد شرایط برای شرکت در مسابقه",
+  },
+  {
+    date: "۲۱ آذر ۱۴۰۴",
+    title: "روز برگزاری مسابقه",
+    status: "upcoming",
+    badge: "پیش رو",
+    badgeClass: "badge-neutral",
+    description: "برگزاری مسابقه در دانشگاه علم و صنعت",
+  },
+  {
+    date: "۲۱ آذر ۱۴۰۴",
+    title: "مراسم اختتامیه و اهدای جوایز",
+    status: "upcoming",
+    badge: "پیش رو",
+    badgeClass: "badge-neutral",
+    description: "مراسم اختتامیه و اهدای جوایز به تیم‌های برتر",
+  },
+];
+
 const TimelineSection = () => {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  const timeline: TimelineEvent[] = [
-    {
-      date: "۱ تا ۵ آذر ۱۴۰۴",
-      title: "ثبت نام بوت کمپ",
-      status: "completed",
-      description: "ثبت‌نام در کارگاه‌های آموزشی آمادگی برای مسابقه",
-    },
-    {
-      date: "۷ آذر ۱۴۰۴",
-      title: "شروع ثبت‌نام مسابقه",
-      status: "active",
-      description: "شروع فرآیند ثبت‌نام برای مسابقه اصلی",
-    },
-    {
-      date: "۱۵ آذر ۱۴۰۴",
-      title: "پایان مهلت ثبت‌نام",
-      status: "upcoming",
-      description: "آخرین فرصت برای ثبت‌نام در مسابقه",
-    },
-    {
-      date: "۱۸ آذر ۱۴۰۴",
-      title: "اعلام لیست نهایی تیم‌ها",
-      status: "upcoming",
-      description: "اعلام اسامی تیم‌های واجد شرایط برای شرکت در مسابقه",
-    },
-    {
-      date: "۲۱ آذر ۱۴۰۴",
-      title: "روز برگزاری مسابقه",
-      status: "upcoming",
-      description: "برگزاری مسابقه در دانشگاه علم و صنعت",
-    },
-    {
-      date: "۲۱ آذر ۱۴۰۴",
-      title: "مراسم اختتامیه و اهدای جوایز",
-      status: "upcoming",
-      description: "مراسم اختتامیه و اهدای جوایز به تیم‌های برتر",
-    },
-  ];
-
-  const getLineStatus = (currentStatus: string, nextStatus: string) => {
-    if (currentStatus === "completed" && nextStatus === "completed") {
-      return "completed";
-    }
-    if (currentStatus === "completed" && nextStatus === "active") {
-      return "completed-to-active";
-    }
-    if (currentStatus === "active" && nextStatus === "upcoming") {
-      return "active-to-upcoming";
-    }
-    if (currentStatus === "completed" && nextStatus === "upcoming") {
-      return "completed-to-upcoming";
-    }
-    return "upcoming";
-  };
-
   return (
-    <div
-      id="timeline"
-      className="py-16 md:py-20 container mx-auto px-4"
-      dir="rtl"
-    >
-      <SectionHeader
-        title="برنامه زمانی مسابقه"
-        description="از ثبت‌نام تا برگزاری مسابقه و مراسم اختتامیه"
-        gradient
-      />
-
-      <div className="max-w-4xl mx-auto relative">
-        {/* Vertical Line */}
-        <div className="absolute right-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#3DDC84] via-[#FFD500] to-[#46BEF6] hidden md:block" />
-
-        {/* Timeline Items */}
-        {timeline.map((event, index) => {
-          const isLastItem = index === timeline.length - 1;
-          const lineStatus = !isLastItem
-            ? getLineStatus(event.status, timeline[index + 1].status)
-            : null;
-
-          const isActive = activeIndex === index;
-
-          return (
-            <TimelineItem
-              key={index}
-              event={event}
-              index={index}
-              isLastItem={isLastItem}
-              lineStatus={lineStatus}
-              isActive={isActive}
-              onHover={() => setActiveIndex(index)}
-              onLeave={() => setActiveIndex(null)}
-            />
-          );
-        })}
-      </div>
-
-      {/* Timeline Legend */}
-      <div className="mt-12 flex flex-wrap justify-center gap-6">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#3DDC84]"></div>
-          <span className="text-sm text-gray-300">تکمیل شده</span>
+    <section className="section" id="timeline" aria-labelledby="timeline-title">
+      <div className="container">
+        <div className="section-head">
+          <h2 className="section-title" id="timeline-title">
+            برنامه زمانی مسابقه
+          </h2>
+          <p className="section-desc">
+            از ثبت‌نام تا برگزاری مسابقه و مراسم اختتامیه
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#FFD500] animate-pulse"></div>
-          <span className="text-sm text-gray-300">در جریان</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-white/30"></div>
-          <span className="text-sm text-gray-300">پیش رو</span>
+        <ol className="timeline">
+          {timeline.map((event) => (
+            <li className={`timeline-item is-${event.status}`} key={event.title}>
+              <span className="timeline-dot" aria-hidden="true" />
+              <div className="timeline-body">
+                <div className="timeline-meta">
+                  <span className="timeline-date">{event.date}</span>
+                  <span className={`badge ${event.badgeClass}`}>
+                    <span className="dot" aria-hidden="true" />
+                    {event.badge}
+                  </span>
+                </div>
+                <h3 className="timeline-title">{event.title}</h3>
+                <p className="timeline-desc">{event.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="legend" aria-label="راهنمای وضعیت رویدادها">
+          <span className="badge badge-success">
+            <span className="dot" aria-hidden="true" />
+            تکمیل شده
+          </span>
+          <span className="badge badge-warning">
+            <span className="dot" aria-hidden="true" />
+            در جریان
+          </span>
+          <span className="badge badge-neutral">
+            <span className="dot" aria-hidden="true" />
+            پیش رو
+          </span>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

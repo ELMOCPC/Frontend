@@ -1,4 +1,4 @@
-// src/pages/LandingPage/components/HeroSection/CountdownTimer.tsx
+// src/components/Landing/HeroSection/CountdownTimer.tsx
 import { Clock } from "lucide-react";
 
 interface CountdownTimerProps {
@@ -19,25 +19,22 @@ const CountdownTimer = ({ countdown }: CountdownTimerProps) => {
   ];
 
   return (
-    <>
-      <p className="text-sm text-[#FFD500] mb-4 flex items-center justify-center gap-2">
-        <Clock className="w-4 h-4" />
+    <div className="countdown-block">
+      <p className="countdown-caption">
+        <Clock className="icon icon-sm" aria-hidden="true" />
         زمان باقی‌مانده تا روز مسابقه
       </p>
-      <div className="flex justify-center gap-4 flex-wrap" dir="ltr">
-        {timeUnits.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 min-w-[80px] transform hover:scale-110 transition-transform duration-300"
-          >
-            <div className="text-3xl font-bold text-[#FFD500]">
+      <div className="countdown" dir="ltr" aria-label="شمارش معکوس تا روز مسابقه">
+        {timeUnits.map((item) => (
+          <div className="countdown-unit" key={item.label}>
+            <span className="countdown-value">
               {String(item.value).padStart(2, "0")}
-            </div>
-            <div className="text-xs text-gray-300 mt-1">{item.label}</div>
+            </span>
+            <span className="countdown-label">{item.label}</span>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

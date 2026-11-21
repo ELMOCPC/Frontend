@@ -38,7 +38,7 @@ function Dashboard() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
-  console.log(showDeleteModal)
+  console.log(showDeleteModal);
 
   useEffect(() => {
     // if (!authUser) {
@@ -59,12 +59,30 @@ function Dashboard() {
 
   if (!userData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#00274D] via-[#003D6B] to-[#00274D] flex items-center justify-center text-white">
-        <div className="text-center">
-          <p className="text-red-400 mb-4">کاربر یافت نشد</p>
+      <div className="auth-page" dir="rtl">
+        <div className="auth-card stack text-center">
+          <p className="alert alert-danger">
+            <span className="alert-icon" aria-hidden="true">
+              <svg
+                className="icon icon-sm"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" x2="12" y1="8" y2="12" />
+                <line x1="12" x2="12.01" y1="16" y2="16" />
+              </svg>
+            </span>
+            <span>کاربر یافت نشد</span>
+          </p>
           <button
+            type="button"
             onClick={() => navigate("/login")}
-            className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] px-4 py-2 rounded-lg"
+            className="btn btn-primary btn-block"
           >
             بازگشت به ورود
           </button>
@@ -123,11 +141,10 @@ function Dashboard() {
     }
   };
 
+  const activeContent = renderActiveTab();
+
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-[#00274D] via-[#003D6B] to-[#00274D] text-white"
-      dir="rtl"
-    >
+    <div dir="rtl">
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -136,11 +153,7 @@ function Dashboard() {
         onLogout={handleLogout}
       />
 
-      <main
-        className={`transition-all duration-300 ${
-          sidebarOpen ? "md:mr-64" : "md:mr-20"
-        }`}
-      >
+      <div className={`with-sidebar${sidebarOpen ? "" : " is-collapsed"}`}>
         <Header
           userData={userData}
           teamData={teamData}
@@ -150,8 +163,44 @@ function Dashboard() {
           onNavigateHome={() => navigate("/")}
         />
 
-        <div className="p-6">{renderActiveTab()}</div>
-      </main>
+        <main className="app-main">
+          <div className="tabs" role="tablist" aria-label="نمای داشبورد">
+            <button
+              type="button"
+              className={`tab${activeTab === "overview" ? " is-active" : ""}`}
+              role="tab"
+              id="tab-overview"
+              aria-selected={activeTab === "overview"}
+              aria-controls="panel-overview"
+              onClick={() => setActiveTab("overview")}
+            >
+              خانه
+            </button>
+            <button
+              type="button"
+              className={`tab${activeTab === "team" ? " is-active" : ""}`}
+              role="tab"
+              id="tab-team"
+              aria-selected={activeTab === "team"}
+              aria-controls="panel-team"
+              onClick={() => setActiveTab("team")}
+            >
+              تیم من
+            </button>
+          </div>
+
+          <div className="tab-panels">
+            <section
+              className="tab-panel stack-lg"
+              id={`panel-${activeTab}`}
+              role="tabpanel"
+              aria-labelledby={`tab-${activeTab}`}
+            >
+              {activeContent}
+            </section>
+          </div>
+        </main>
+      </div>
 
       {/* Modals */}
       {/* <DeleteTeamModal
