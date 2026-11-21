@@ -1,25 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import {
   Search,
   CheckCircle,
   XCircle,
   Users,
+  User,
   Mail,
   Phone,
-  Award,
   LogOut,
   Menu,
   X,
-  Eye,
   RefreshCw,
-  FileText,
-  CreditCard,
   Receipt,
   ExternalLink,
-  // User,
   Globe,
+  ChevronDown,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -30,7 +27,7 @@ import {
   verifyReceiptService,
   fetchPendingReceiptsService,
   type Team,
-  type User,
+  type User as AdminUser,
 } from "@/services/adminServices";
 
 type TeamStatus =
@@ -50,7 +47,7 @@ type Receipt = {
 function AdminTeamsApproval() {
   const navigate = useNavigate();
   const [teams, setTeams] = useState<Team[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [usersLoading, setUsersLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -172,6 +169,12 @@ function AdminTeamsApproval() {
     setShowReceiptModal(true);
   };
 
+  const closeReceiptModal = () => {
+    setShowReceiptModal(false);
+    setSelectedReceipt(null);
+    setVerificationNotes("");
+  };
+
   const fetchUsers = async () => {
     try {
       setUsersLoading(true);
@@ -277,43 +280,31 @@ function AdminTeamsApproval() {
 
   const statusConfig: Record<
     TeamStatus,
-    { color: string; label: string; icon: any; bgClass: string }
+    { label: string; pillClass: string }
   > = {
     draft: {
-      color: "bg-gray-500/20 text-gray-400 border-gray-500/30",
       label: "پیش‌نویس",
-      icon: FileText,
-      bgClass: "bg-gray-500/20 text-gray-400",
+      pillClass: "is-draft",
     },
     submitted: {
-      color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
       label: "ثبت‌نام شده",
-      icon: Users,
-      bgClass: "bg-blue-500/20 text-blue-400",
+      pillClass: "is-submitted",
     },
     waiting_for_payment: {
-      color: "bg-orange-500/20 text-orange-400 border-orange-500/30",
       label: "در انتظار پرداخت",
-      icon: CreditCard,
-      bgClass: "bg-orange-500/20 text-orange-400",
+      pillClass: "is-waiting",
     },
     receipt_pending: {
-      color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
       label: "در انتظار رسید",
-      icon: Receipt,
-      bgClass: "bg-yellow-500/20 text-yellow-400",
+      pillClass: "is-receipt",
     },
     accepted: {
-      color: "bg-green-500/20 text-green-400 border-green-500/30",
       label: "تایید شده",
-      icon: CheckCircle,
-      bgClass: "bg-green-500/20 text-green-400",
+      pillClass: "is-accepted",
     },
     rejected: {
-      color: "bg-red-500/20 text-red-400 border-red-500/30",
       label: "رد شده",
-      icon: XCircle,
-      bgClass: "bg-red-500/20 text-red-400",
+      pillClass: "is-rejected",
     },
   };
 
@@ -350,10 +341,15 @@ function AdminTeamsApproval() {
   };
 
   const renderLoading = () => (
-    <div className="min-h-screen bg-gradient-to-br from-[#00274D] via-[#003D6B] to-[#00274D] flex items-center justify-center text-white">
-      <div className="text-center">
-        <div className="w-12 h-12 border-4 border-[#FFD500]/30 border-t-[#FFD500] rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-lg">
+    <div
+      dir="rtl"
+      className="app-main"
+      style={{ minHeight: "100vh", justifyContent: "center" }}
+      aria-live="polite"
+    >
+      <div className="empty">
+        <span className="spinner" aria-hidden="true" />
+        <p className="empty-text">
           {activeTab === "teams"
             ? "درحال بارگذاری تیم‌ها..."
             : "درحال بارگذاری کاربران..."}
@@ -370,125 +366,92 @@ function AdminTeamsApproval() {
   }
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-[#00274D] via-[#003D6B] to-[#00274D] text-white"
-      dir="rtl"
-    >
+    <div dir="rtl">
       {/* Sidebar */}
-      <aside
-        className={`fixed top-0 right-0 h-full bg-[#00274D]/95 backdrop-blur-md border-l border-white/10 transition-all duration-300 z-50 w-72 overflow-y-auto ${
-          !sidebarOpen && "hidden"
-        }`}
-      >
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-xl font-bold">پنل مدیریت</h2>
-              <p className="text-xs text-gray-400 mt-1">
-                سیستم مدیریت تیم‌ها و کاربران
-              </p>
-            </div>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+      <aside className={`sidebar${!sidebarOpen ? " is-collapsed" : ""}`}>
+        <div className="sidebar-head">
+          <div className="wordmark wordmark-sm">
+            <span className="wm-elmo">ELMO</span>
+            <span className="wm-c1">C</span>
+            <span className="wm-p">P</span>
+            <span className="wm-c2">C</span>
+            <span className="wm-year"> 2025</span>
           </div>
+          <p className="sidebar-title">پنل مدیریت</p>
+          <p className="sidebar-sub">سیستم مدیریت تیم‌ها و کاربران</p>
+        </div>
 
-          <nav className="space-y-3 mb-8">
-            <button
-              onClick={() => setActiveTab("teams")}
-              className={`w-full text-right px-4 py-3 rounded-lg transition-colors flex items-center gap-3 ${
-                activeTab === "teams"
-                  ? "bg-[#FFD500] text-[#00274D] font-semibold hover:bg-[#FFD500]/90"
-                  : "bg-white/5 hover:bg-white/10 text-white"
-              }`}
-            >
-              <Users className="w-5 h-5" />
-              <span>تایید تیم‌ها</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("users")}
-              className={`w-full text-right px-4 py-3 rounded-lg transition-colors flex items-center gap-3 ${
-                activeTab === "users"
-                  ? "bg-[#FFD500] text-[#00274D] font-semibold hover:bg-[#FFD500]/90"
-                  : "bg-white/5 hover:bg-white/10 text-white"
-              }`}
-            >
-              {/* <User className="w-5 h-5" /> */}
-              <span>مدیریت کاربران</span>
-            </button>
-          </nav>
+        <nav className="sidebar-nav" aria-label="بخش‌های پنل مدیریت">
+          <button
+            type="button"
+            onClick={() => setActiveTab("teams")}
+            className={`sidebar-link${activeTab === "teams" ? " is-active" : ""}`}
+            aria-current={activeTab === "teams" ? "page" : undefined}
+          >
+            <Users className="icon" />
+            <span className="sidebar-label">تایید تیم‌ها</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("users")}
+            className={`sidebar-link${activeTab === "users" ? " is-active" : ""}`}
+            aria-current={activeTab === "users" ? "page" : undefined}
+          >
+            <User className="icon" />
+            <span className="sidebar-label">مدیریت کاربران</span>
+          </button>
 
-          <div className="mb-6 p-4 bg-white/5 rounded-xl border border-white/10">
-            <h3 className="font-semibold mb-4 text-sm flex items-center gap-2">
-              <Award className="w-4 h-4 text-[#FFD500]" />
+          <div className="sidebar-stat">
+            <p className="sidebar-stat-title">
               {activeTab === "teams" ? "آمار تیم‌ها" : "آمار کاربران"}
-            </h3>
-            <div className="space-y-3 text-xs">
+            </p>
+            <div className="kv-list">
               {activeTab === "teams" ? (
                 <>
-                  <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
-                    <span className="text-gray-300">کل تیم‌ها</span>
-                    <span className="text-[#FFD500] font-bold text-sm">
-                      {stats.total}
-                    </span>
+                  <div className="kv-row">
+                    <span className="kv-key">کل تیم‌ها</span>
+                    <span className="kv-value">{stats.total}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <span className="text-gray-400">پیش‌نویس</span>
-                    <span className="text-gray-400 font-semibold">
-                      {stats.draft}
-                    </span>
+                  <div className="kv-row">
+                    <span className="kv-key">پیش‌نویس</span>
+                    <span className="kv-value">{stats.draft}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <span className="text-blue-400">ثبت‌نام شده</span>
-                    <span className="text-blue-400 font-semibold">
-                      {stats.submitted}
-                    </span>
+                  <div className="kv-row">
+                    <span className="kv-key">ثبت‌نام شده</span>
+                    <span className="kv-value">{stats.submitted}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <span className="text-orange-400">در انتظار پرداخت</span>
-                    <span className="text-orange-400 font-semibold">
-                      {stats.waiting_for_payment}
-                    </span>
+                  <div className="kv-row">
+                    <span className="kv-key">در انتظار پرداخت</span>
+                    <span className="kv-value">{stats.waiting_for_payment}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <span className="text-yellow-400">در انتظار رسید</span>
-                    <span className="text-yellow-400 font-semibold">
-                      {stats.receipt_pending}
-                    </span>
+                  <div className="kv-row">
+                    <span className="kv-key">در انتظار رسید</span>
+                    <span className="kv-value">{stats.receipt_pending}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <span className="text-green-400">تایید شده</span>
-                    <span className="text-green-400 font-semibold">
-                      {stats.accepted}
-                    </span>
+                  <div className="kv-row">
+                    <span className="kv-key">تایید شده</span>
+                    <span className="kv-value">{stats.accepted}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <span className="text-red-400">رد شده</span>
-                    <span className="text-red-400 font-semibold">
-                      {stats.rejected}
-                    </span>
+                  <div className="kv-row">
+                    <span className="kv-key">رد شده</span>
+                    <span className="kv-value">{stats.rejected}</span>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="flex justify-between items-center p-2 bg-white/5 rounded-lg">
-                    <span className="text-gray-300">کل کاربران</span>
-                    <span className="text-[#FFD500] font-bold text-sm">
-                      {users.length}
-                    </span>
+                  <div className="kv-row">
+                    <span className="kv-key">کل کاربران</span>
+                    <span className="kv-value">{users.length}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <span className="text-green-400">تایید ایمیل شده</span>
-                    <span className="text-green-400 font-semibold">
+                  <div className="kv-row">
+                    <span className="kv-key">تایید ایمیل شده</span>
+                    <span className="kv-value">
                       {users.filter((u) => u.email_verified).length}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
-                    <span className="text-yellow-400">تایید ایمیل نشده</span>
-                    <span className="text-yellow-400 font-semibold">
+                  <div className="kv-row">
+                    <span className="kv-key">تایید ایمیل نشده</span>
+                    <span className="kv-value">
                       {users.filter((u) => !u.email_verified).length}
                     </span>
                   </div>
@@ -496,136 +459,141 @@ function AdminTeamsApproval() {
               )}
             </div>
           </div>
+        </nav>
 
-          <Button
+        <div className="sidebar-foot">
+          <button
+            type="button"
             onClick={handleLogout}
-            className="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 hover:border-red-400 transition-all"
+            className="sidebar-link sidebar-logout"
           >
-            <LogOut className="w-5 h-5 ml-2" />
-            خروج از سیستم
-          </Button>
+            <LogOut className="icon" />
+            <span className="sidebar-label">خروج از سیستم</span>
+          </button>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="md:mr-72 min-h-screen">
+      <div className={`with-sidebar${!sidebarOpen ? " is-collapsed" : ""}`}>
         {/* Header */}
-        <header className="bg-[#00274D]/90 backdrop-blur-md border-b border-white/10 fixedS top-0 z-40 shadow-lg">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                >
-                  <Menu className="w-6 h-6" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-bold">
-                    {activeTab === "teams"
-                      ? "مدیریت و تایید تیم‌ها"
-                      : "مدیریت کاربران"}
-                  </h1>
-                  <p className="text-sm text-gray-400 mt-1">
-                    {activeTab === "teams"
-                      ? `${filteredTeams.length} تیم از ${teams.length} تیم`
-                      : `${filteredUsers.length} کاربر از ${users.length} کاربر`}
-                  </p>
-                </div>
-              </div>
-              <Button
+        <header className="topbar">
+          <div className="topbar-inner has-search">
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              aria-label="جمع کردن منوی کناری"
+              aria-expanded={sidebarOpen}
+            >
+              <Menu className="icon" />
+            </button>
+
+            <div>
+              <h1 className="topbar-title">
+                {activeTab === "teams"
+                  ? "مدیریت و تایید تیم‌ها"
+                  : "مدیریت کاربران"}
+              </h1>
+              <p className="topbar-sub">
+                {activeTab === "teams"
+                  ? `${filteredTeams.length} تیم از ${teams.length} تیم`
+                  : `${filteredUsers.length} کاربر از ${users.length} کاربر`}
+              </p>
+            </div>
+
+            <div className="topbar-actions">
+              <label className="search search-grow">
+                <input
+                  className="input"
+                  type="search"
+                  aria-label="جستجو"
+                  placeholder={
+                    activeTab === "teams"
+                      ? "جستجو بر اساس نام تیم، توضیحات، نام اعضا یا ایمیل..."
+                      : "جستجو بر اساس نام، ایمیل، شماره تلفن یا کد ملی..."
+                  }
+                  value={activeTab === "teams" ? searchTerm : userSearchTerm}
+                  onChange={(e) =>
+                    activeTab === "teams"
+                      ? setSearchTerm(e.target.value)
+                      : setUserSearchTerm(e.target.value)
+                  }
+                />
+                <Search className="icon search-icon" aria-hidden="true" />
+              </label>
+
+              <button
+                type="button"
+                className="btn btn-secondary"
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="bg-[#FFD500]/20 hover:bg-[#FFD500]/30 text-[#FFD500] border border-[#FFD500]/30"
               >
                 <RefreshCw
-                  className={`w-5 h-5 ml-2 ${refreshing ? "animate-spin" : ""}`}
+                  className="icon-sm"
+                  style={
+                    refreshing
+                      ? { animation: "spin 700ms linear infinite" }
+                      : undefined
+                  }
                 />
                 {refreshing ? "درحال بروزرسانی..." : "بروزرسانی"}
-              </Button>
+              </button>
             </div>
           </div>
         </header>
 
-        {/* Content */}
-        <div className="p-6">
-          {/* Search Section */}
-          <div className="mb-8">
-            <div className="relative">
-              <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder={
-                  activeTab === "teams"
-                    ? "جستجو بر اساس نام تیم، توضیحات، نام اعضا یا ایمیل..."
-                    : "جستجو بر اساس نام، ایمیل، شماره تلفن یا کد ملی..."
-                }
-                value={activeTab === "teams" ? searchTerm : userSearchTerm}
-                onChange={(e) =>
-                  activeTab === "teams"
-                    ? setSearchTerm(e.target.value)
-                    : setUserSearchTerm(e.target.value)
-                }
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-[#FFD500] focus:ring-2 focus:ring-[#FFD500]/20 transition-all"
-              />
+        <main className="app-main">
+          {/* Status filter chips (teams tab only) */}
+          {activeTab === "teams" && (
+            <div
+              className="chips chips-start"
+              role="group"
+              aria-label="فیلتر وضعیت تیم‌ها"
+            >
+              {(
+                [
+                  { value: "all", label: "همه تیم‌ها" },
+                  { value: "submitted", label: "ثبت‌نام شده" },
+                  { value: "waiting_for_payment", label: "در انتظار پرداخت" },
+                  { value: "receipt_pending", label: "در انتظار رسید" },
+                  { value: "accepted", label: "تایید شده" },
+                  { value: "rejected", label: "رد شده" },
+                ] as const
+              ).map((status) => (
+                <button
+                  key={status.value}
+                  type="button"
+                  className={`chip${
+                    filterStatus === status.value ? " is-active" : ""
+                  }`}
+                  onClick={() => setFilterStatus(status.value)}
+                  aria-pressed={filterStatus === status.value}
+                >
+                  {status.label}
+                </button>
+              ))}
             </div>
-
-            {/* Team Filters */}
-            {activeTab === "teams" && (
-              <div className="flex gap-2 overflow-x-auto pb-2 mt-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-                {(
-                  [
-                    "all",
-                    "submitted",
-                    "waiting_for_payment",
-                    "receipt_pending",
-                    "accepted",
-                    "rejected",
-                  ] as const
-                ).map((status) => {
-                  const Icon =
-                    status !== "all" ? statusConfig[status].icon : Users;
-                  return (
-                    <button
-                      key={status}
-                      onClick={() => setFilterStatus(status)}
-                      className={`px-4 py-2.5 rounded-xl transition-all flex-shrink-0 text-sm font-medium flex items-center gap-2 border ${
-                        filterStatus === status
-                          ? "bg-[#FFD500] text-[#00274D] border-[#FFD500] shadow-lg shadow-[#FFD500]/20"
-                          : "bg-white/5 hover:bg-white/10 text-white/80 border-white/10"
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      {status === "all" && "همه تیم‌ها"}
-                      {status === "submitted" && "ثبت‌نام شده"}
-                      {status === "waiting_for_payment" && "در انتظار پرداخت"}
-                      {status === "receipt_pending" && "در انتظار رسید"}
-                      {status === "accepted" && "تایید شده"}
-                      {status === "rejected" && "رد شده"}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          )}
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 flex items-center gap-3">
-              <XCircle className="w-5 h-5 flex-shrink-0" />
-              <span>{error}</span>
+            <div className="alert alert-danger" role="alert">
+              <XCircle className="icon alert-icon" aria-hidden="true" />
+              <div>
+                <p className="alert-title">خطا</p>
+                <p>{error}</p>
+              </div>
             </div>
           )}
 
           {/* Teams Tab Content */}
           {activeTab === "teams" && (
-            <div className="grid grid-cols-1 gap-6">
+            <section className="stack" aria-label="تایید تیم‌ها">
               {filteredTeams.length === 0 ? (
-                <div className="text-center py-20 bg-white/5 rounded-2xl border border-white/10">
-                  <Users className="w-24 h-24 mx-auto mb-6 text-gray-500 opacity-50" />
-                  <p className="text-gray-400 text-xl mb-3 font-semibold">
-                    تیمی یافت نشد
-                  </p>
-                  <p className="text-gray-500">
+                <div className="empty">
+                  <span className="empty-icon" aria-hidden="true">
+                    <Users className="icon-lg" />
+                  </span>
+                  <p className="empty-text">تیمی یافت نشد</p>
+                  <p className="small text-muted">
                     {searchTerm || filterStatus !== "all"
                       ? "لطفاً عبارت جستجو یا فیلترها را تغییر دهید"
                       : "هنوز هیچ تیمی ثبت‌نام نکرده است"}
@@ -633,245 +601,254 @@ function AdminTeamsApproval() {
                 </div>
               ) : (
                 filteredTeams.map((team) => {
-                  const StatusIcon = statusConfig[team.status].icon;
                   const canApprove =
                     team.status === "submitted" ||
                     team.status === "receipt_pending";
                   const statusMsg = getStatusMessage(team.status);
 
                   return (
-                    <div
-                      key={team.id}
-                      className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] hover:border-white/20 transition-all duration-200 group shadow-xl"
-                    >
-                      {/* Team Header */}
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3 flex-wrap">
-                            <h2 className="text-2xl font-bold text-white group-hover:text-[#FFD500] transition-colors">
-                              {team.name}
-                            </h2>
+                    <article className="card stack" key={team.id}>
+                      <div className="team-card-head">
+                        <div className="stack">
+                          <div className="row">
+                            <h2 className="card-title">{team.name}</h2>
                             <span
-                              className={`px-3 py-1.5 rounded-full text-sm font-semibold border flex items-center gap-2 ${
-                                statusConfig[team.status].color
+                              className={`status-pill ${
+                                statusConfig[team.status].pillClass
                               }`}
                             >
-                              <StatusIcon className="w-4 h-4" />
+                              <span className="dot" aria-hidden="true" />
                               {statusConfig[team.status].label}
                             </span>
                           </div>
 
                           {team.description && (
-                            <p className="text-gray-300 mb-4 text-sm leading-relaxed">
-                              {team.description}
-                            </p>
+                            <p className="card-text">{team.description}</p>
                           )}
 
-                          <div className="flex items-center gap-6 text-sm text-gray-400 flex-wrap">
-                            <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg">
-                              <Users className="w-4 h-4 text-[#FFD500]" />
-                              <span>{team.members?.length || 0} عضو</span>
-                            </div>
+                          <div className="row">
+                            <span className="chip">
+                              <Users className="icon-sm" aria-hidden="true" />
+                              {team.members?.length || 0} عضو
+                            </span>
                             {team.receipt_image_url && (
                               <a
                                 href={team.receipt_image_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 bg-green-500/10 px-3 py-1.5 rounded-lg hover:bg-green-500/20 transition-colors text-green-400"
+                                className="chip"
                               >
-                                <Receipt className="w-4 h-4" />
-                                <span>مشاهده رسید</span>
-                                <ExternalLink className="w-3 h-3" />
+                                <Receipt className="icon-sm" aria-hidden="true" />
+                                مشاهده رسید
+                                <ExternalLink
+                                  className="icon-sm"
+                                  aria-hidden="true"
+                                />
                               </a>
                             )}
                           </div>
                         </div>
-                        <Button
-                          onClick={() =>
-                            setSelectedTeam(
-                              selectedTeam?.id === team.id ? null : team
-                            )
-                          }
-                          className="bg-white/10 hover:bg-white/20 text-white border border-white/10 hover:border-white/20"
-                        >
-                          <Eye className="w-5 h-5 ml-2" />
-                          {selectedTeam?.id === team.id
-                            ? "بستن جزئیات"
-                            : "مشاهده جزئیات"}
-                        </Button>
                       </div>
 
                       {/* Team Members Preview */}
-                      <div className="mb-6 p-5 bg-white/5 rounded-xl border border-white/10">
-                        <h3 className="font-semibold mb-4 flex items-center gap-2 text-base">
-                          <Users className="w-5 h-5 text-[#FFD500]" />
-                          اعضای تیم
-                          <span className="text-sm text-gray-400">
+                      <div className="stack">
+                        <div className="row">
+                          <Users className="icon" aria-hidden="true" />
+                          <h3 className="card-title">اعضای تیم</h3>
+                          <span className="small text-muted">
                             ({team.members?.length || 0} نفر)
                           </span>
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        </div>
+                        <div className="member-preview">
                           {team.members?.slice(0, 3).map((member) => (
-                            <div
-                              key={member.id}
-                              className="bg-white/5 rounded-lg p-3 border border-white/5 hover:border-[#FFD500]/30 hover:bg-white/10 transition-all"
-                            >
-                              <div className="flex items-center gap-3 mb-2">
-                                <div className="w-10 h-10 bg-gradient-to-br from-[#FFD500] to-[#FFC500] rounded-full flex items-center justify-center text-sm font-bold text-[#00274D]">
-                                  {member.first_name.charAt(0)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-semibold text-sm truncate">
-                                    {member.first_name} {member.last_name}
-                                  </p>
-                                  <p
-                                    className={`text-xs ${
-                                      member.id === team.creator_id
-                                        ? "text-[#FFD500]"
-                                        : "text-gray-400"
-                                    }`}
-                                  >
-                                    {member.id === team.creator_id
-                                      ? "👑 کاپیتان"
-                                      : "عضو تیم"}
-                                  </p>
-                                </div>
-                              </div>
-                              <p className="text-xs text-gray-500 truncate">
-                                {member.email}
-                              </p>
+                            <div className="member-chip" key={member.id}>
+                              <span className="avatar" aria-hidden="true">
+                                {member.first_name.charAt(0)}
+                              </span>
+                              <span className="user-meta">
+                                <span className="user-name">
+                                  {member.first_name} {member.last_name}
+                                </span>
+                                <span
+                                  className={`user-role${
+                                    member.id === team.creator_id
+                                      ? " text-warning"
+                                      : ""
+                                  }`}
+                                >
+                                  {member.id === team.creator_id
+                                    ? "کاپیتان"
+                                    : "عضو تیم"}
+                                </span>
+                                <span className="user-role">
+                                  {member.email}
+                                </span>
+                              </span>
                             </div>
                           ))}
                           {team.members && team.members.length > 3 && (
-                            <div className="bg-white/5 rounded-lg p-3 border border-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                              <span className="text-sm text-gray-400 font-medium">
-                                + {team.members.length - 3} عضو دیگر
-                              </span>
+                            <div className="member-chip text-center">
+                              + {team.members.length - 3} عضو دیگر
                             </div>
                           )}
                         </div>
                       </div>
-                      <div className="mb-6">
-                        {/* Receipt Verification Button */}
-                        {team.receipt_image_url &&
-                          team.status === "receipt_pending" && (
-                            <div className=" mt-3">
-                              <Button
-                                onClick={() =>
-                                  handleOpenReceiptModal(team.id, team.name)
-                                }
-                                className="bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30 w-full"
-                              >
-                                <Receipt className="w-4 h-4 ml-1" />
-                                تایید/رد فیش
-                              </Button>
-                            </div>
-                          )}
-                      </div>
+
+                      {/* Receipt Verification Button */}
+                      {team.receipt_image_url &&
+                        team.status === "receipt_pending" && (
+                          <div className="card-actions">
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              onClick={() =>
+                                handleOpenReceiptModal(team.id, team.name)
+                              }
+                            >
+                              <Receipt className="icon-sm" aria-hidden="true" />
+                              تایید/رد فیش
+                            </button>
+                          </div>
+                        )}
 
                       {/* Expanded Details */}
-                      {selectedTeam?.id === team.id && (
-                        <div className="mb-6 p-6 bg-gradient-to-br from-[#FFD500]/10 to-[#FFD500]/5 rounded-xl border border-[#FFD500]/30 space-y-6 animate-in fade-in duration-300">
-                          <h3 className="font-semibold flex items-center gap-2 text-lg">
-                            <Award className="w-6 h-6 text-[#FFD500]" />
+                      <details
+                        className="details"
+                        open={selectedTeam?.id === team.id}
+                        onToggle={(e) => {
+                          const isOpen = e.currentTarget.open;
+                          setSelectedTeam((prev) =>
+                            isOpen
+                              ? prev?.id === team.id
+                                ? prev
+                                : team
+                              : prev?.id === team.id
+                              ? null
+                              : prev
+                          );
+                        }}
+                      >
+                        <summary>
+                          <span className="details-when-closed">
+                            مشاهده جزئیات
+                          </span>
+                          <span className="details-when-open">
+                            بستن جزئیات
+                          </span>
+                          <ChevronDown
+                            className="details-chevron icon"
+                            aria-hidden="true"
+                          />
+                        </summary>
+                        <div className="details-body">
+                          <p className="details-title">
                             اطلاعات کامل اعضای تیم
-                          </h3>
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {team.members?.map((member) => (
-                              <div
-                                key={member.id}
-                                className="bg-white/10 rounded-xl p-5 border border-white/10 hover:border-[#FFD500]/40 transition-all duration-200 hover:shadow-lg"
-                              >
-                                <div className="flex items-center gap-4 mb-4">
-                                  <div className="w-14 h-14 bg-gradient-to-br from-[#FFD500] to-[#FFC500] rounded-full flex items-center justify-center text-xl font-bold text-[#00274D]">
+                          </p>
+                          {team.members?.map((member) => (
+                            <div className="detail-member" key={member.id}>
+                              <div className="detail-member-head">
+                                <div className="row">
+                                  <span className="avatar" aria-hidden="true">
                                     {member.first_name.charAt(0)}
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className="font-semibold text-lg">
+                                  </span>
+                                  <span className="user-meta">
+                                    <span className="user-name">
                                       {member.first_name} {member.last_name}
-                                    </p>
-                                    <p
-                                      className={`text-sm flex items-center gap-1 ${
+                                    </span>
+                                    <span
+                                      className={`user-role${
                                         member.id === team.creator_id
-                                          ? "text-[#FFD500]"
-                                          : "text-gray-400"
+                                          ? " text-warning"
+                                          : ""
                                       }`}
                                     >
-                                      {member.id === team.creator_id && "👑"}
                                       {member.id === team.creator_id
                                         ? "کاپیتان تیم"
                                         : "عضو تیم"}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="space-y-3 text-sm">
-                                  <div className="flex items-center gap-3 text-gray-300 bg-white/5 p-2 rounded-lg">
-                                    <Mail className="w-4 h-4 text-[#FFD500] flex-shrink-0" />
-                                    <span className="truncate">
-                                      {member.email}
                                     </span>
-                                  </div>
-                                  <div className="flex items-center gap-3 text-gray-300 bg-white/5 p-2 rounded-lg">
-                                    <Phone className="w-4 h-4 text-[#FFD500] flex-shrink-0" />
-                                    <span>{member.phone}</span>
-                                  </div>
+                                  </span>
                                 </div>
                               </div>
-                            ))}
-                          </div>
+                              <span className="row small text-muted">
+                                <Mail
+                                  className="icon-sm"
+                                  aria-hidden="true"
+                                />
+                                {member.email}
+                              </span>
+                              <span className="row small text-muted">
+                                <Phone
+                                  className="icon-sm"
+                                  aria-hidden="true"
+                                />
+                                {member.phone}
+                              </span>
+                            </div>
+                          ))}
                         </div>
-                      )}
+                      </details>
 
-                      {/* Action Buttons */}
+                      {/* Action Buttons / status message */}
                       {canApprove && team.status !== "receipt_pending" ? (
-                        <div className="flex gap-3 pt-6 border-t border-white/10">
-                          <Button
+                        <div className="card-actions">
+                          <button
+                            type="button"
+                            className="btn btn-success"
                             onClick={() => handleApproveTeam(team.id)}
                             disabled={approving === team.id}
-                            className="flex-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 hover:border-green-400 transition-all shadow-lg hover:shadow-green-500/20"
                           >
-                            <CheckCircle className="w-5 h-5 ml-2" />
+                            {approving === team.id ? (
+                              <span className="spinner" aria-hidden="true" />
+                            ) : (
+                              <CheckCircle
+                                className="icon-sm"
+                                aria-hidden="true"
+                              />
+                            )}
                             {approving === team.id
                               ? "درحال تایید..."
-                              : "✓ تایید تیم"}
-                          </Button>
-                          <Button
+                              : "تایید تیم"}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-destructive"
                             onClick={() => handleRejectTeam(team.id)}
                             disabled={rejecting === team.id}
-                            className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 hover:border-red-400 transition-all shadow-lg hover:shadow-red-500/20"
                           >
-                            <XCircle className="w-5 h-5 ml-2" />
-                            {rejecting === team.id ? "درحال رد..." : "✗ رد تیم"}
-                          </Button>
+                            {rejecting === team.id ? (
+                              <span className="spinner" aria-hidden="true" />
+                            ) : (
+                              <XCircle
+                                className="icon-sm"
+                                aria-hidden="true"
+                              />
+                            )}
+                            {rejecting === team.id ? "درحال رد..." : "رد تیم"}
+                          </button>
                         </div>
                       ) : (
-                        <div className="pt-6 border-t border-white/10">
-                          <div
-                            className={`text-center p-4 rounded-xl font-medium ${
-                              statusConfig[team.status].bgClass
-                            }`}
-                          >
-                            {statusMsg.emoji} {statusMsg.text}
-                          </div>
-                        </div>
+                        <p className="status-message">
+                          <Info className="icon icon-sm" aria-hidden="true" />
+                          {statusMsg.text}
+                        </p>
                       )}
-                    </div>
+                    </article>
                   );
                 })
               )}
-            </div>
+            </section>
           )}
 
           {/* Users Tab Content */}
           {activeTab === "users" && (
-            <div className="grid grid-cols-1 gap-6">
+            <section className="stack" aria-label="مدیریت کاربران">
               {filteredUsers.length === 0 ? (
-                <div className="text-center py-20 bg-white/5 rounded-2xl border border-white/10">
-                  {/* <User className="w-24 h-24 mx-auto mb-6 text-gray-500 opacity-50" /> */}
-                  <p className="text-gray-400 text-xl mb-3 font-semibold">
-                    کاربری یافت نشد
-                  </p>
-                  <p className="text-gray-500">
+                <div className="empty">
+                  <span className="empty-icon" aria-hidden="true">
+                    <User className="icon-lg" />
+                  </span>
+                  <p className="empty-text">کاربری یافت نشد</p>
+                  <p className="small text-muted">
                     {userSearchTerm
                       ? "لطفاً عبارت جستجو را تغییر دهید"
                       : "هنوز هیچ کاربری ثبت‌نام نکرده است"}
@@ -879,184 +856,187 @@ function AdminTeamsApproval() {
                 </div>
               ) : (
                 filteredUsers.map((user) => (
-                  <div
-                    key={user.id}
-                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] hover:border-white/20 transition-all duration-200 group shadow-xl"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-[#FFD500] to-[#FFC500] rounded-full flex items-center justify-center text-xl font-bold text-[#00274D]">
-                            {user.first_name.charAt(0)}
-                          </div>
-                          <div>
-                            <h2 className="text-2xl font-bold text-white group-hover:text-[#FFD500] transition-colors">
-                              {user.first_name} {user.last_name}
-                            </h2>
-                            <div className="flex items-center gap-4 mt-2 flex-wrap">
-                              <span
-                                className={`px-3 py-1 rounded-full text-sm font-semibold border ${
-                                  user.email_verified
-                                    ? "bg-green-500/20 text-green-400 border-green-500/30"
-                                    : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                                }`}
-                              >
-                                {user.email_verified
-                                  ? "✓ تایید ایمیل"
-                                  : "⏳ در انتظار تایید"}
+                  <article className="card" key={user.id}>
+                    <div className="user-card-head">
+                      <div className="row">
+                        <span className="avatar" aria-hidden="true">
+                          {user.first_name.charAt(0)}
+                        </span>
+                        <div>
+                          <h2 className="card-title">
+                            {user.first_name} {user.last_name}
+                          </h2>
+                          <div className="row">
+                            <span
+                              className={`badge ${
+                                user.email_verified
+                                  ? "badge-success"
+                                  : "badge-warning"
+                              }`}
+                            >
+                              {user.email_verified
+                                ? "تایید ایمیل"
+                                : "در انتظار تایید"}
+                            </span>
+                            {user.ip_address && (
+                              <span className="badge badge-cyan">
+                                <Globe className="icon-sm" aria-hidden="true" />
+                                IP: {user.ip_address}
                               </span>
-                              {user.ip_address && (
-                                <span className="flex items-center gap-2 px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full text-sm">
-                                  <Globe className="w-4 h-4" />
-                                  IP: {user.ip_address}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-3 text-gray-300 bg-white/5 p-3 rounded-lg">
-                              <Mail className="w-4 h-4 text-[#FFD500] flex-shrink-0" />
-                              <div>
-                                <p className="text-sm text-gray-400">ایمیل</p>
-                                <p className="truncate">{user.email}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-3 text-gray-300 bg-white/5 p-3 rounded-lg">
-                              <Phone className="w-4 h-4 text-[#FFD500] flex-shrink-0" />
-                              <div>
-                                <p className="text-sm text-gray-400">
-                                  شماره تلفن
-                                </p>
-                                <p>{user.phone}</p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            <div className="bg-white/5 p-3 rounded-lg">
-                              <p className="text-sm text-gray-400 mb-1">
-                                کد ملی
-                              </p>
-                              <p className="text-gray-300">
-                                {user.national_code}
-                              </p>
-                            </div>
-                            <div className="bg-white/5 p-3 rounded-lg">
-                              <p className="text-sm text-gray-400 mb-1">
-                                دانشگاه
-                              </p>
-                              <p className="text-gray-300">
-                                {user.university || "ثبت نشده"}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            <div className="bg-white/5 p-3 rounded-lg">
-                              <p className="text-sm text-gray-400 mb-1">
-                                سایز تی‌شرت
-                              </p>
-                              <p className="text-gray-300">
-                                {user.tshirt_size || "ثبت نشده"}
-                              </p>
-                            </div>
-                            <div className="bg-white/5 p-3 rounded-lg">
-                              <p className="text-sm text-gray-400 mb-1">
-                                تاریخ ثبت‌نام
-                              </p>
-                              <p className="text-gray-300 text-sm">
-                                {new Date(user.created_at).toLocaleDateString(
-                                  "fa-IR"
-                                )}
-                              </p>
-                            </div>
+                            )}
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+
+                    <div className="user-fields">
+                      <div className="user-field">
+                        <p className="user-field-key">ایمیل</p>
+                        <p className="user-field-val">{user.email}</p>
+                      </div>
+                      <div className="user-field">
+                        <p className="user-field-key">شماره تلفن</p>
+                        <p className="user-field-val">{user.phone}</p>
+                      </div>
+                      <div className="user-field">
+                        <p className="user-field-key">کد ملی</p>
+                        <p className="user-field-val">{user.national_code}</p>
+                      </div>
+                      <div className="user-field">
+                        <p className="user-field-key">دانشگاه</p>
+                        <p className="user-field-val">
+                          {user.university || "ثبت نشده"}
+                        </p>
+                      </div>
+                      <div className="user-field">
+                        <p className="user-field-key">سایز تی‌شرت</p>
+                        <p className="user-field-val">
+                          {user.tshirt_size || "ثبت نشده"}
+                        </p>
+                      </div>
+                      <div className="user-field">
+                        <p className="user-field-key">تاریخ ثبت‌نام</p>
+                        <p className="user-field-val">
+                          {new Date(user.created_at).toLocaleDateString("fa-IR")}
+                        </p>
+                      </div>
+                    </div>
+                  </article>
                 ))
               )}
-            </div>
+            </section>
           )}
-        </div>
-        {/* مودال تایید/رد فیش */}
-        {showReceiptModal && selectedReceipt && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-[#00274D] border border-white/10 rounded-2xl p-6 max-w-md w-full">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                  <Receipt className="w-6 h-6 text-orange-400" />
-                </div>
-                <h3 className="text-lg font-bold">تایید فیش پرداخت</h3>
+        </main>
+      </div>
+
+      {/* مودال تایید/رد فیش */}
+      {showReceiptModal && selectedReceipt && (
+        <div
+          className="modal-overlay"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) closeReceiptModal();
+          }}
+        >
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="verify-receipt-title"
+          >
+            <div className="modal-head">
+              <div className="row">
+                <span
+                  className="stat-icon is-receipt"
+                  aria-hidden="true"
+                >
+                  <Receipt className="icon" />
+                </span>
+                <h2 className="modal-title" id="verify-receipt-title">
+                  تایید فیش پرداخت
+                </h2>
+              </div>
+              <button
+                type="button"
+                className="icon-btn"
+                onClick={closeReceiptModal}
+                aria-label="بستن"
+              >
+                <X className="icon" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div className="modal-body stack">
+              <div className="receipt-frame">
+                <Receipt className="icon-lg" aria-hidden="true" />
+                <p>پیش‌نمایش تصویر فیش پرداخت</p>
+                <p className="small">JPG, PNG, PDF</p>
               </div>
 
-              <p className="text-gray-300 mb-4">
+              <p className="card-text">
                 آیا از {selectedReceipt.approved ? "تایید" : "رد"} فیش پرداخت
                 تیم
-                <span className="text-[#FFD500] font-semibold">
+                <span className="text-highlight">
                   {" "}
                   {selectedReceipt.teamName}{" "}
                 </span>
                 مطمئن هستید؟
               </p>
 
-              <div className="mb-4">
-                <label className="text-sm text-gray-400 mb-2 block">
+              <div className="field">
+                <label className="label" htmlFor="receipt-note">
                   یادداشت (اختیاری)
                 </label>
                 <textarea
+                  id="receipt-note"
+                  className="textarea"
+                  rows={3}
                   value={verificationNotes}
                   onChange={(e) => setVerificationNotes(e.target.value)}
                   placeholder="یادداشت برای تیم..."
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[#FFD500] focus:ring-2 focus:ring-[#FFD500]/20 resize-none"
-                  rows={3}
                 />
               </div>
+            </div>
 
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => {
-                    setShowReceiptModal(false);
-                    setSelectedReceipt(null);
-                    setVerificationNotes("");
-                  }}
-                  className="flex-1 bg-white/10 hover:bg-white/20 text-white"
-                >
-                  انصراف
-                </Button>
-                <Button
-                  onClick={() => handleVerifyReceipt(selectedReceipt.id, false)}
-                  disabled={verifyingReceipt === selectedReceipt.id}
-                  className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30"
-                >
-                  {verifyingReceipt === selectedReceipt.id ? (
-                    <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin ml-2" />
-                  ) : (
-                    <XCircle className="w-5 h-5 ml-2" />
-                  )}
-                  رد فیش
-                </Button>
-                <Button
-                  onClick={() => handleVerifyReceipt(selectedReceipt.id, true)}
-                  disabled={verifyingReceipt === selectedReceipt.id}
-                  className="flex-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30"
-                >
-                  {verifyingReceipt === selectedReceipt.id ? (
-                    <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin ml-2" />
-                  ) : (
-                    <CheckCircle className="w-5 h-5 ml-2" />
-                  )}
-                  تایید فیش
-                </Button>
-              </div>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={closeReceiptModal}
+              >
+                انصراف
+              </button>
+              <button
+                type="button"
+                className="btn btn-destructive"
+                onClick={() =>
+                  handleVerifyReceipt(selectedReceipt.id, false)
+                }
+                disabled={verifyingReceipt === selectedReceipt.id}
+              >
+                {verifyingReceipt === selectedReceipt.id ? (
+                  <span className="spinner" aria-hidden="true" />
+                ) : (
+                  <XCircle className="icon-sm" aria-hidden="true" />
+                )}
+                رد فیش
+              </button>
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={() => handleVerifyReceipt(selectedReceipt.id, true)}
+                disabled={verifyingReceipt === selectedReceipt.id}
+              >
+                {verifyingReceipt === selectedReceipt.id ? (
+                  <span className="spinner" aria-hidden="true" />
+                ) : (
+                  <CheckCircle className="icon-sm" aria-hidden="true" />
+                )}
+                تایید فیش
+              </button>
             </div>
           </div>
-        )}
-      </main>
+        </div>
+      )}
     </div>
   );
 }

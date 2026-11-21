@@ -1,8 +1,6 @@
 // src/pages/TeamRegistration/components/Steps/MemberInfoStep.tsx
-import { Formik, Form } from "formik";
-import { User, ArrowRight, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import CustomInput from "@/components/Custom/CustomInput";
+import { Formik, Form, Field, type FieldProps } from "formik";
+import { User, ArrowLeft } from "lucide-react";
 import TShirtSizeSelect from "../Common/TShirtSizeSelect";
 import FormHeader from "../Common/FormHeader";
 import FormLayout from "../Common/FormLayout";
@@ -59,6 +57,24 @@ const validationSchema = Yup.object({
     .required("سایز تیشرت الزامی است"),
 });
 
+interface TextFieldConfig {
+  name: string;
+  label: string;
+  type?: string;
+  dir?: "ltr" | "rtl";
+  maxLength?: number;
+  autoFocus?: boolean;
+}
+
+const textFields: TextFieldConfig[] = [
+  { name: "name", label: "نام", type: "text", autoFocus: true },
+  { name: "familyName", label: "نام خانوادگی", type: "text" },
+  { name: "email", label: "ایمیل", type: "email", dir: "ltr" },
+  { name: "phone", label: "شماره موبایل", type: "tel", dir: "ltr", maxLength: 11 },
+  { name: "university", label: "نام دانشگاه", type: "text" },
+  { name: "nationalCode", label: "کد ملی", type: "text", maxLength: 10 },
+];
+
 const MemberInfoStep = ({
   memberType,
   memberNumber,
@@ -84,82 +100,70 @@ const MemberInfoStep = ({
           />
 
           <FormLayout>
-            <CustomInput
-              name="name"
-              type="text"
-              label="نام"
-              className="w-full px-4 py-3 rounded-lg"
-              autoFocus
-            />
+            {textFields.map((config) => {
+              const inputId = `member-${memberNumber}-${config.name}`;
 
-            <CustomInput
-              name="familyName"
-              type="text"
-              label="نام خانوادگی"
-              className="w-full px-4 py-3 rounded-lg"
-            />
+              return (
+                <Field key={config.name} name={config.name}>
+                  {({ field, meta }: FieldProps) => {
+                    const hasError = meta.touched && !!meta.error;
 
-            <CustomInput
-              name="email"
-              type="email"
-              label="ایمیل"
-              className="w-full px-4 py-3 rounded-lg"
-              dir="ltr"
-            />
-
-            <CustomInput
-              name="phone"
-              type="tel"
-              label="شماره موبایل"
-              className="w-full px-4 py-3 rounded-lg"
-              dir="ltr"
-              maxLength={11}
-            />
-
-            <CustomInput
-              name="university"
-              type="text"
-              label="نام دانشگاه"
-              className="w-full px-4 py-3 rounded-lg"
-            />
-
-            <CustomInput
-              name="nationalCode"
-              type="text"
-              label="کد ملی"
-              className="w-full px-4 py-3 rounded-lg"
-              maxLength={10}
-            />
+                    return (
+                      <div>
+                        <div className="fl">
+                          <input
+                            {...field}
+                            id={inputId}
+                            type={config.type ?? "text"}
+                            dir={config.dir}
+                            maxLength={config.maxLength}
+                            autoFocus={config.autoFocus}
+                            placeholder=" "
+                            className="input fl-control"
+                            aria-invalid={hasError}
+                          />
+                          <label className="fl-label" htmlFor={inputId}>
+                            {config.label}
+                          </label>
+                        </div>
+                        {hasError && (
+                          <span className="field-error">
+                            {meta.error as string}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  }}
+                </Field>
+              );
+            })}
 
             <TShirtSizeSelect />
           </FormLayout>
 
-          <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            <Button
+          <div className="form-actions form-actions-fill">
+            <button
               type="button"
               onClick={onBack}
-              className="flex-1 bg-white/10 hover:bg-white/20 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200"
+              className="btn btn-ghost btn-lg"
             >
               {memberNumber === 1 ? (
                 <>{backButtonText}</>
               ) : (
                 <>
-                  <ArrowLeft className="w-5 h-5 ml-2 inline-block" />
+                  <ArrowLeft className="icon" aria-hidden="true" />
                   {backButtonText}
                 </>
               )}
-            </Button>
+            </button>
 
-            <Button
+            <button
               type="submit"
               disabled={formSubmitting || isSubmitting}
-              className="flex-1 bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-semibold py-4 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#FFD500]/50 active:scale-95"
+              className="btn btn-yellow btn-lg"
             >
-              {formSubmitting || isSubmitting
-                ? "در حال ذخیره..."
-                : "ذخیره و ادامه"}
-              <ArrowRight className="w-5 h-5 mr-2 inline-block" />
-            </Button>
+              {formSubmitting || isSubmitting ? "در حال ذخیره..." : "ذخیره و ادامه"}
+            </button>
           </div>
         </Form>
       )}

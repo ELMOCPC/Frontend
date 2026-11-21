@@ -1,12 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import CustomInput from "@/components/Custom/CustomInput";
-import { Button } from "@/components/ui/button";
-import { Formik, Form } from "formik";
+import { Formik, Form, Field, type FieldProps } from "formik";
 import * as Yup from "yup";
 import ELMOCPC from "@/assets/ELMOCPC.svg";
 import CESA from "@/assets/CESA.svg";
-import BG from "@/assets/BG.png";
 import {
   InputOTP,
   InputOTPGroup,
@@ -162,149 +159,142 @@ function Login() {
     }
   };
 
-  const handleSignUpClick = () => {
-    navigate("/signup");
-  };
-
   // const handleForgotPasswordClick = () => {
   //   navigate("/forgot-password");
   // };
 
   return (
-    <div
-      className="relative w-full min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${BG})`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="w-full max-w-md">
+    <main className="auth-page">
+      <section className="auth-card" aria-labelledby="login-title">
         {step === "email" ? (
-          <Formik
-            initialValues={{ email: "" }}
-            validationSchema={emailValidationSchema}
-            onSubmit={handleEmailSubmit}
-          >
-            {({ isSubmitting }) => (
-              <Form>
-                <div className="bg-[#00274D]/85 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
-                  <h1 className="text-white text-2xl text-center mb-10 font-semibold">
-                    ورود به حساب کاربری
-                  </h1>
+          <>
+            <header className="form-header">
+              <h1 className="form-title" id="login-title">
+                ورود به حساب کاربری
+              </h1>
+            </header>
 
-                  <div className="space-y-6">
-                    <CustomInput
-                      name="email"
-                      type="email"
-                      label="ایمیل"
-                      className="w-full px-4 py-3 rounded-lg"
-                      dir="ltr"
-                    />
+            <Formik
+              initialValues={{ email: "" }}
+              validationSchema={emailValidationSchema}
+              onSubmit={handleEmailSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form>
+                  <div className="form-stack">
+                    <Field name="email">
+                      {({ field, meta }: FieldProps) => {
+                        const hasError = Boolean(meta.touched && meta.error);
 
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="
-                        w-full 
-                        bg-[#FFD500] 
-                        hover:bg-[#e6c200]
-                        text-[#00274D] 
-                        font-semibold 
-                        py-3 px-6 
-                        rounded-lg 
-                        transition-all duration-200 
-                        disabled:opacity-50 
-                        disabled:cursor-not-allowed
-                        focus:outline-none 
-                        focus:ring-2 focus:ring-[#FFD500]/50
-                        active:scale-95
-                      "
-                    >
-                      {isSubmitting ? "در حال ارسال..." : "دریافت کد تایید"}
-                    </Button>
+                        return (
+                          <div>
+                            <div className="fl">
+                              <input
+                                {...field}
+                                className="input fl-control"
+                                id="login-email"
+                                name="email"
+                                type="email"
+                                placeholder=" "
+                                autoComplete="email"
+                                dir="ltr"
+                                aria-invalid={hasError}
+                                aria-describedby={
+                                  hasError ? "login-email-error" : undefined
+                                }
+                              />
+                              <label
+                                className="fl-label"
+                                htmlFor="login-email"
+                              >
+                                ایمیل
+                              </label>
+                            </div>
+                            {hasError && (
+                              <p
+                                className="field-error"
+                                id="login-email-error"
+                              >
+                                {meta.error}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      }}
+                    </Field>
 
-                    <p className="text-white text-center text-sm mt-4 clear-right">
+                    <div className="form-actions">
                       <button
-                        type="button"
-                        onClick={handleSignUpClick}
-                        className="text-[#FFD500] hover:text-[#e6c200] font-semibold underline cursor-pointer transition-colors	duration-200"
+                        className="btn btn-yellow btn-lg btn-block"
+                        type="submit"
+                        disabled={isSubmitting}
                       >
-                        ثبت‌نام کنید
-                      </button>{" "}
-                      حساب کاربری ندارید؟
-                    </p>
+                        {isSubmitting ? "در حال ارسال..." : "دریافت کد تایید"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </Form>
-            )}
-          </Formik>
-        ) : (
-          <div className="bg-[#00274D]/85 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
-            <h1 className="text-white text-2xl text-center mb-2 font-semibold">
-              تایید کد ارسال شده
-            </h1>
-            <div className="bg-white/10 border border-white/20 rounded-lg p-4 mb-6">
-              <p className="text-white/70 text-center text-sm">
-                کد تایید به آدرس ایمیل زیر ارسال شد:
-              </p>
-              <p className="text-[#FFD500] text-center text-lg font-semibold mt-2 break-all">
-                {userEmail}
-              </p>
-            </div>
-            <p className="text-white/70 text-center text-sm mb-8">
-              کد تایید را وارد کنید
-            </p>
+                </Form>
+              )}
+            </Formik>
 
-            <div className="space-y-6">
-              <div className="flex justify-center">
-                <InputOTP
-                  maxLength={6}
-                  value={otpValue}
-                  onChange={setOtpValue}
-                  dir="ltr"
-                >
-                  <InputOTPGroup className="gap-3">
-                    {[0, 1, 2, 3, 4, 5].map((i) => (
-                      <InputOTPSlot
-                        key={i}
-                        index={i}
-                        className="w-12 h-12 rounded-lg bg-white/10 border border-white/20 text-white text-xl font-semibold"
-                      />
-                    ))}
-                  </InputOTPGroup>
-                </InputOTP>
+            <p className="form-foot">
+              حساب کاربری ندارید؟{" "}
+              <Link className="link" to="/signup">
+                ثبت‌نام کنید
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            <header className="form-header">
+              <h1 className="form-title" id="login-title">
+                تایید کد ارسال شده
+              </h1>
+            </header>
+
+            <div className="form-stack">
+              <div className="alert alert-info">
+                <div>
+                  <p className="small">کد تایید به آدرس ایمیل زیر ارسال شد:</p>
+                  <p className="text-highlight">{userEmail}</p>
+                </div>
               </div>
 
-              <Button
-                type="button"
-                onClick={handleOtpSubmit}
-                disabled={otpLoading || otpValue.length !== 6}
-                className="
-                  w-full 
-                  bg-[#FFD500] 
-                  hover:bg-[#e6c200]
-                  text-[#00274D] 
-                  font-semibold 
-                  py-3 px-6 
-                  rounded-lg 
-                  transition-all	duration-200 
-                  disabled:opacity-50 
-                  disabled:cursor-not-allowed
-                  focus:outline-none 
-                  focus:ring-2 focus:ring-[#FFD500]/50
-                  active:scale-95
-                "
-              >
-                {otpLoading ? "در حال تایید..." : "تایید"}
-              </Button>
+              <p className="helper text-center">کد تایید را وارد کنید</p>
 
-              <div className="flex flex-col gap-3">
+              <InputOTP
+                maxLength={6}
+                value={otpValue}
+                onChange={setOtpValue}
+                dir="ltr"
+              >
+                <InputOTPGroup className="otp">
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <InputOTPSlot
+                      key={i}
+                      index={i}
+                      className="otp-input"
+                    />
+                  ))}
+                </InputOTPGroup>
+              </InputOTP>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  onClick={handleOtpSubmit}
+                  disabled={otpLoading || otpValue.length !== 6}
+                  className="btn btn-yellow btn-lg btn-block"
+                >
+                  {otpLoading ? "در حال تایید..." : "تایید"}
+                </button>
+              </div>
+
+              <div className="form-actions">
                 <button
                   type="button"
                   onClick={handleResendOtp}
-                  className="text-[#FFD500] hover:text-[#e6c200] font-semibold text-sm transition-colors duration-200"
+                  className="btn btn-ghost btn-block"
                 >
                   ارسال مجدد کد تایید
                 </button>
@@ -315,30 +305,29 @@ function Login() {
                     setStep("email");
                     setOtpValue("");
                   }}
-                  className="text-white/70 hover:text-white text-sm transition-colors duration-200"
+                  className="btn btn-ghost btn-block"
                 >
                   بازگشت به مرحله قبل
                 </button>
               </div>
             </div>
-          </div>
+          </>
         )}
-      </div>
+      </section>
 
-      {/* لوگو گوشه پایین سمت راست */}
+      <Link to="/" aria-label="ELMOCPC">
+        <img
+          className="corner-logo corner-logo-start"
+          src={ELMOCPC}
+          alt="ELMOCPC"
+        />
+      </Link>
       <img
-        src={ELMOCPC}
-        alt="ELMOCPC Logo"
-        className="absolute bottom-4 right-4 w-32 opacity-80 hover:opacity-100 transition-opacity	duration-300"
-      />
-
-      {/* لوگو گوشه پایین سمت چپ */}
-      <img
+        className="corner-logo corner-logo-end"
         src={CESA}
-        alt="CESA Logo"
-        className="absolute bottom-4 left-4 w-20 opacity-80 hover:opacity-100 transition-opacity	duration-300"
+        alt="CESA"
       />
-    </div>
+    </main>
   );
 }
 

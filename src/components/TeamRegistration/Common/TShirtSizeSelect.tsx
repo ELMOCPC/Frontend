@@ -1,44 +1,51 @@
 // src/pages/TeamRegistration/components/Common/TShirtSizeSelect.tsx
-import { Field } from "formik";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+import { Field, type FieldProps } from "formik";
 
 const TShirtSizeSelect = () => {
   return (
     <Field name="tshirtSize">
-      {({ field, form }: any) => (
-        <div className="space-y-2 rtl w-full">
-          <label className="text-white text-sm">سایز تیشرت</label>
+      {({ field, meta }: FieldProps) => {
+        const hasError = meta.touched && !!meta.error;
 
-          <Select
-            value={field.value}
-            onValueChange={(val) => form.setFieldValue(field.name, val)}
-            dir="rtl"
-          >
-            <SelectTrigger className="w-full bg-white/10 backdrop-blur-md text-white border border-white/20 px-4 py-3 rounded-lg">
-              <SelectValue placeholder="سایز تیشرت را انتخاب کنید" />
-            </SelectTrigger>
+        return (
+          <div className="field">
+            <label className="label" htmlFor="member-tshirt-size">
+              سایز تیشرت
+            </label>
 
-            <SelectContent className="rtl">
-              <SelectItem value="M">M</SelectItem>
-              <SelectItem value="L">L</SelectItem>
-              <SelectItem value="XL">XL</SelectItem>
-              <SelectItem value="XXL">XXL</SelectItem>
-            </SelectContent>
-          </Select>
+            <span className="select">
+              <select
+                {...field}
+                value={field.value ?? ""}
+                id="member-tshirt-size"
+                aria-invalid={hasError}
+              >
+                <option value="">سایز تیشرت را انتخاب کنید</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+                <option value="XXL">XXL</option>
+              </select>
+              <svg
+                className="select-chevron icon-sm"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </span>
 
-          {form.touched[field.name] && form.errors[field.name] && (
-            <p className="text-red-400 text-xs">
-              {form.errors[field.name] as string}
-            </p>
-          )}
-        </div>
-      )}
+            {hasError && (
+              <span className="field-error">{meta.error as string}</span>
+            )}
+          </div>
+        );
+      }}
     </Field>
   );
 };

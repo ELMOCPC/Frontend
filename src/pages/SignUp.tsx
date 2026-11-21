@@ -1,18 +1,20 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import CustomInput from "@/components/Custom/CustomInput";
-import { Button } from "@/components/ui/button";
-import { Formik, Form, type FormikHelpers } from "formik";
+import {
+  Formik,
+  Form,
+  Field,
+  type FieldProps,
+  type FormikHelpers,
+} from "formik";
 import * as Yup from "yup";
 import ELMOCPC from "@/assets/ELMOCPC.svg";
 import CESA from "@/assets/CESA.svg";
-import BG from "@/assets/BG.png";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { registerService, verifyOtpSignupService } from "@/services/authService";
 import type {
   RegisterPayload,
@@ -209,217 +211,404 @@ function SignUp() {
     }
   };
 
-  const handleLoginClick = () => {
-    navigate("/login");
-  };
-
   return (
-    <div
-      className="relative w-full min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${BG})`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="w-full max-w-md">
+    <main className="auth-page">
+      <section className="auth-card" aria-labelledby="signup-title">
         {step === "form" ? (
-          <Formik<SignUpFormValues>
-            initialValues={{
-              name: "",
-              familyName: "",
-              email: "",
-              phone: "",
-              national_code: "",
-              tshirt_size: "",
-              university: "",
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-          >
-            {({ isSubmitting, setFieldValue, values, errors, touched }) => (
-              <Form>
-                <div className="bg-[#00274D]/85 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
-                  <h1 className="text-white text-2xl text-center mb-10 font-semibold">
-                    لطفا اطلاعات خود را وارد کنید
-                  </h1>
+          <>
+            <header className="form-header">
+              <h1 className="form-title" id="signup-title">
+                لطفا اطلاعات خود را وارد کنید
+              </h1>
+            </header>
 
-                  <div className="space-y-6">
-                    <CustomInput
-                      name="name"
-                      type="text"
-                      label="نام"
-                      className="w-full px-4 py-3 rounded-lg"
-                    />
+            <Formik<SignUpFormValues>
+              initialValues={{
+                name: "",
+                familyName: "",
+                email: "",
+                phone: "",
+                national_code: "",
+                tshirt_size: "",
+                university: "",
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+            >
+              {({ isSubmitting, setFieldValue, values, errors, touched }) => (
+                <Form>
+                  <div className="form-stack">
+                    <div className="grid">
+                      <Field name="name">
+                        {({ field, meta }: FieldProps) => {
+                          const hasError = Boolean(meta.touched && meta.error);
 
-                    <CustomInput
-                      name="familyName"
-                      type="text"
-                      label="نام خانوادگی"
-                      className="w-full px-4 py-3 rounded-lg"
-                    />
+                          return (
+                            <div>
+                              <div className="fl">
+                                <input
+                                  {...field}
+                                  className="input fl-control"
+                                  id="signup-name"
+                                  name="name"
+                                  type="text"
+                                  placeholder=" "
+                                  autoComplete="given-name"
+                                  aria-invalid={hasError}
+                                  aria-describedby={
+                                    hasError ? "signup-name-error" : undefined
+                                  }
+                                />
+                                <label className="fl-label" htmlFor="signup-name">
+                                  نام
+                                </label>
+                              </div>
+                              {hasError && (
+                                <p
+                                  className="field-error"
+                                  id="signup-name-error"
+                                >
+                                  {meta.error}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        }}
+                      </Field>
 
-                    <CustomInput
-                      name="email"
-                      type="email"
-                      label="ایمیل"
-                      className="w-full px-4 py-3 rounded-lg"
-                      dir="ltr"
-                    />
+                      <Field name="familyName">
+                        {({ field, meta }: FieldProps) => {
+                          const hasError = Boolean(meta.touched && meta.error);
 
-                    <CustomInput
-                      name="phone"
-                      type="tel"
-                      label="شماره موبایل"
-                      className="w-full px-4 py-3 rounded-lg"
-                      dir="ltr"
-                      maxLength={11}
-                    />
+                          return (
+                            <div>
+                              <div className="fl">
+                                <input
+                                  {...field}
+                                  className="input fl-control"
+                                  id="signup-family"
+                                  name="familyName"
+                                  type="text"
+                                  placeholder=" "
+                                  autoComplete="family-name"
+                                  aria-invalid={hasError}
+                                  aria-describedby={
+                                    hasError ? "signup-family-error" : undefined
+                                  }
+                                />
+                                <label
+                                  className="fl-label"
+                                  htmlFor="signup-family"
+                                >
+                                  نام خانوادگی
+                                </label>
+                              </div>
+                              {hasError && (
+                                <p
+                                  className="field-error"
+                                  id="signup-family-error"
+                                >
+                                  {meta.error}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        }}
+                      </Field>
 
-                    <CustomInput
-                      name="national_code"
-                      type="text"
-                      label="کد ملی"
-                      className="w-full px-4 py-3 rounded-lg"
-                      dir="ltr"
-                      maxLength={10}
-                      inputMode="numeric"
-                    />
+                      <Field name="email">
+                        {({ field, meta }: FieldProps) => {
+                          const hasError = Boolean(meta.touched && meta.error);
 
-                    {/* سایز تیشرت به صورت Select */}
-                    <div className="space-y-2 rtl">
-                      <Select
-                        value={values.tshirt_size}
-                        onValueChange={(val) => setFieldValue("tshirt_size", val)}
-                        dir="rtl"
-                      >
-                        <SelectTrigger className="w-full bg-white/10 backdrop-blur-md text-white border border-white/20">
-                          <SelectValue placeholder="سایز تیشرت را انتخاب کنید" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="M">M</SelectItem>
-                          <SelectItem value="L">L</SelectItem>
-                          <SelectItem value="XL">XL</SelectItem>
-                          <SelectItem value="XXL">XXL</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {touched.tshirt_size && errors.tshirt_size && (
-                        <p className="text-red-400 text-xs">
-                          {errors.tshirt_size as string}
-                        </p>
-                      )}
+                          return (
+                            <div>
+                              <div className="fl">
+                                <input
+                                  {...field}
+                                  className="input fl-control"
+                                  id="signup-email"
+                                  name="email"
+                                  type="email"
+                                  placeholder=" "
+                                  autoComplete="email"
+                                  dir="ltr"
+                                  aria-invalid={hasError}
+                                  aria-describedby={
+                                    hasError ? "signup-email-error" : undefined
+                                  }
+                                />
+                                <label
+                                  className="fl-label"
+                                  htmlFor="signup-email"
+                                >
+                                  ایمیل
+                                </label>
+                              </div>
+                              {hasError && (
+                                <p
+                                  className="field-error"
+                                  id="signup-email-error"
+                                >
+                                  {meta.error}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        }}
+                      </Field>
+
+                      <Field name="phone">
+                        {({ field, meta }: FieldProps) => {
+                          const hasError = Boolean(meta.touched && meta.error);
+
+                          return (
+                            <div>
+                              <div className="fl">
+                                <input
+                                  {...field}
+                                  className="input fl-control"
+                                  id="signup-phone"
+                                  name="phone"
+                                  type="tel"
+                                  placeholder=" "
+                                  autoComplete="tel"
+                                  dir="ltr"
+                                  maxLength={11}
+                                  aria-invalid={hasError}
+                                  aria-describedby={
+                                    hasError ? "signup-phone-error" : undefined
+                                  }
+                                />
+                                <label
+                                  className="fl-label"
+                                  htmlFor="signup-phone"
+                                >
+                                  شماره موبایل
+                                </label>
+                              </div>
+                              {hasError && (
+                                <p
+                                  className="field-error"
+                                  id="signup-phone-error"
+                                >
+                                  {meta.error}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        }}
+                      </Field>
+
+                      <Field name="national_code">
+                        {({ field, meta }: FieldProps) => {
+                          const hasError = Boolean(meta.touched && meta.error);
+
+                          return (
+                            <div>
+                              <div className="fl">
+                                <input
+                                  {...field}
+                                  className="input fl-control"
+                                  id="signup-national-id"
+                                  name="national_code"
+                                  type="text"
+                                  placeholder=" "
+                                  dir="ltr"
+                                  maxLength={10}
+                                  inputMode="numeric"
+                                  aria-invalid={hasError}
+                                  aria-describedby={
+                                    hasError
+                                      ? "signup-national-id-error"
+                                      : undefined
+                                  }
+                                />
+                                <label
+                                  className="fl-label"
+                                  htmlFor="signup-national-id"
+                                >
+                                  کد ملی
+                                </label>
+                              </div>
+                              {hasError && (
+                                <p
+                                  className="field-error"
+                                  id="signup-national-id-error"
+                                >
+                                  {meta.error}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        }}
+                      </Field>
+
+                      <div>
+                        <label className="sr-only" htmlFor="signup-tshirt">
+                          سایز تیشرت
+                        </label>
+                        <span className="select">
+                          <select
+                            id="signup-tshirt"
+                            name="tshirt_size"
+                            value={values.tshirt_size}
+                            onChange={(e) =>
+                              setFieldValue("tshirt_size", e.target.value)
+                            }
+                            aria-invalid={Boolean(
+                              touched.tshirt_size && errors.tshirt_size
+                            )}
+                            aria-describedby={
+                              touched.tshirt_size && errors.tshirt_size
+                                ? "signup-tshirt-error"
+                                : undefined
+                            }
+                          >
+                            <option value="">
+                              سایز تیشرت را انتخاب کنید
+                            </option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                          </select>
+                          <svg
+                            className="select-chevron icon-sm"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                          >
+                            <path d="m6 9 6 6 6-6" />
+                          </svg>
+                        </span>
+                        {touched.tshirt_size && errors.tshirt_size && (
+                          <p
+                            className="field-error"
+                            id="signup-tshirt-error"
+                          >
+                            {errors.tshirt_size as string}
+                          </p>
+                        )}
+                      </div>
+
+                      <Field name="university">
+                        {({ field, meta }: FieldProps) => {
+                          const hasError = Boolean(meta.touched && meta.error);
+
+                          return (
+                            <div>
+                              <div className="fl">
+                                <input
+                                  {...field}
+                                  className="input fl-control"
+                                  id="signup-university"
+                                  name="university"
+                                  type="text"
+                                  placeholder=" "
+                                  aria-invalid={hasError}
+                                  aria-describedby={
+                                    hasError
+                                      ? "signup-university-error"
+                                      : undefined
+                                  }
+                                />
+                                <label
+                                  className="fl-label"
+                                  htmlFor="signup-university"
+                                >
+                                  دانشگاه
+                                </label>
+                              </div>
+                              {hasError && (
+                                <p
+                                  className="field-error"
+                                  id="signup-university-error"
+                                >
+                                  {meta.error}
+                                </p>
+                              )}
+                            </div>
+                          );
+                        }}
+                      </Field>
                     </div>
 
-                    <CustomInput
-                      name="university"
-                      type="text"
-                      label="دانشگاه"
-                      className="w-full px-4 py-3 rounded-lg"
-                    />
-
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="
-                        w-full 
-                        bg-[#FFD500] 
-                        hover:bg-[#e6c200]
-                        text-[#00274D] 
-                        font-semibold 
-                        py-3 px-6 
-                        rounded-lg 
-                        transition-all duration-200 
-                        disabled:opacity-50 
-                        disabled:cursor-not-allowed
-                        focus:outline-none 
-                        focus:ring-2 focus:ring-[#FFD500]/50
-                        active:scale-95
-                      "
-                    >
-                      {isSubmitting ? "در حال ثبت..." : "ثبت اطلاعات"}
-                    </Button>
-
-                    <p className="text-white text-center text-sm mt-4">
+                    <div className="form-actions">
                       <button
-                        type="button"
-                        onClick={handleLoginClick}
-                        className="text-[#FFD500] hover:text-[#e6c200] font-semibold cursor-pointer underline transition-colors duration-200"
+                        className="btn btn-yellow btn-lg btn-block"
+                        type="submit"
+                        disabled={isSubmitting}
                       >
-                        وارد شوید
-                      </button>{" "}
-                      قبلا حساب کاربری داشته‌اید؟
-                    </p>
+                        {isSubmitting ? "در حال ثبت..." : "ثبت اطلاعات"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </Form>
-            )}
-          </Formik>
-        ) : (
-          <div className="bg-[#00274D]/85 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
-            <h1 className="text-white text-2xl text-center mb-2 font-semibold">
-              تایید کد ارسال شده
-            </h1>
-            <div className="bg-white/10 border border-white/20 rounded-lg p-4 mb-6">
-              <p className="text-white/70 text-center text-sm">
-                کد تایید به آدرس ایمیل زیر ارسال شد:
-              </p>
-              <p className="text-[#FFD500] text-center text-lg font-semibold mt-2 break-all">
-                {userData?.email}
-              </p>
-            </div>
-            <p className="text-white/70 text-center text-sm mb-8">
-              کد تایید را وارد کنید
-            </p>
+                </Form>
+              )}
+            </Formik>
 
-            <div className="space-y-6">
-              <div className="flex justify-center">
-                <InputOTP
-                  maxLength={6}
-                  value={otpValue}
-                  onChange={setOtpValue}
-                  dir="ltr"
-                >
-                  <InputOTPGroup className="gap-3">
-                    {[0, 1, 2, 3, 4, 5].map((i) => (
-                      <InputOTPSlot
-                        key={i}
-                        index={i}
-                        className="w-9 h-9 md:w-12 md:h-12 rounded-lg bg-white/10 border border-white/20 text-white text-xl font-semibold"
-                      />
-                    ))}
-                  </InputOTPGroup>
-                </InputOTP>
+            <p className="form-foot">
+              قبلا حساب کاربری داشته‌اید؟{" "}
+              <Link className="link" to="/login">
+                وارد شوید
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            <header className="form-header">
+              <h1 className="form-title" id="signup-title">
+                تایید کد ارسال شده
+              </h1>
+            </header>
+
+            <div className="form-stack">
+              <div className="alert alert-info">
+                <div>
+                  <p className="small">کد تایید به آدرس ایمیل زیر ارسال شد:</p>
+                  <p className="text-highlight">{userData?.email}</p>
+                </div>
               </div>
 
-              <Button
-                type="button"
-                onClick={handleOtpSubmit}
-                disabled={otpLoading || otpValue.length !== 6}
-                className="
-                  w-full 
-                  bg-[#FFD500] 
-                  hover:bg-[#e6c200]
-                  text-[#00274D] 
-                  font-semibold 
-                  py-3 px-6 
-                  rounded-lg 
-                  transition-all duration-200 
-                  disabled:opacity-50 
-                  disabled:cursor-not-allowed
-                  focus:outline-none 
-                  focus:ring-2 focus:ring-[#FFD500]/50
-                  active:scale-95
-                "
-              >
-                {otpLoading ? "در حال تایید..." : "تایید"}
-              </Button>
+              <p className="helper text-center">کد تایید را وارد کنید</p>
 
-              <div className="flex flex-col gap-3">
+              <InputOTP
+                maxLength={6}
+                value={otpValue}
+                onChange={setOtpValue}
+                dir="ltr"
+              >
+                <InputOTPGroup className="otp">
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <InputOTPSlot
+                      key={i}
+                      index={i}
+                      className="otp-input"
+                    />
+                  ))}
+                </InputOTPGroup>
+              </InputOTP>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  onClick={handleOtpSubmit}
+                  disabled={otpLoading || otpValue.length !== 6}
+                  className="btn btn-yellow btn-lg btn-block"
+                >
+                  {otpLoading ? "در حال تایید..." : "تایید"}
+                </button>
+              </div>
+
+              <div className="form-actions">
                 <button
                   type="button"
                   onClick={handleResendOtp}
-                  className="text-[#FFD500] hover:text-[#e6c200] font-semibold text-sm transition-colors duration-200"
+                  className="btn btn-ghost btn-block"
                 >
                   ارسال مجدد کد تایید
                 </button>
@@ -430,30 +619,29 @@ function SignUp() {
                     setStep("form");
                     setOtpValue("");
                   }}
-                  className="text-white/70 hover:text-white text-sm transition-colors duration-200"
+                  className="btn btn-ghost btn-block"
                 >
                   بازگشت به مرحله قبل
                 </button>
               </div>
             </div>
-          </div>
+          </>
         )}
-      </div>
+      </section>
 
-      {/* لوگو گوشه پایین سمت راست */}
+      <Link to="/" aria-label="ELMOCPC">
+        <img
+          className="corner-logo corner-logo-start"
+          src={ELMOCPC}
+          alt="ELMOCPC"
+        />
+      </Link>
       <img
-        src={ELMOCPC}
-        alt="ELMOCPC Logo"
-        className="absolute bottom-4 right-4 w-32 opacity-80 hover:opacity-100 transition-opacity duration-300"
-      />
-
-      {/* لوگو گوشه پایین سمت چپ */}
-      <img
+        className="corner-logo corner-logo-end"
         src={CESA}
-        alt="CESA Logo"
-        className="absolute bottom-4 left-4 w-20 opacity-80 hover:opacity-100 transition-opacity duration-300"
+        alt="CESA"
       />
-    </div>
+    </main>
   );
 }
 

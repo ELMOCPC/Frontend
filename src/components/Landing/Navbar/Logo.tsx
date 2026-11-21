@@ -1,22 +1,18 @@
-// src/pages/LandingPage/components/Navbar/Logo.tsx
 const Logo = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <div
-      className="flex items-center gap-3 cursor-pointer"
-      onClick={scrollToTop}
-    >
-      <div className="text-xl font-bold">
-        <span className="text-[#ffffff]">ELMO</span>
-        <span className="text-[#46BEF6]">C</span>
-        <span className="text-[#D7263D]">P</span>
-        <span className="text-[#FFD500]">C</span>
-        <span className="text-white"> 2025</span>
-      </div>
-    </div>
+    <a className="brand" href="#home" onClick={scrollToTop}>
+      <span className="wordmark wordmark-sm">
+        <span className="wm-elmo">ELMO</span>
+        <span className="wm-c1">C</span>
+        <span className="wm-p">P</span>
+        <span className="wm-c2">C</span>
+        <span className="wm-year"> 2025</span>
+      </span>
+    </a>
   );
 };
 

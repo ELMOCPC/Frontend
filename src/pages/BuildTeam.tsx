@@ -1,7 +1,8 @@
 // src/pages/TeamRegistration/TeamRegistration.tsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import BG from "@/assets/BG.png";
+import { useNavigate, Link } from "react-router-dom";
+import ELMOCPC from "@/assets/ELMOCPC.svg";
+import CESA from "@/assets/CESA.svg";
 import ProgressBar from "@/components/TeamRegistration/ProgressBar/ProgressBar";
 import TeamInfoStep from "@/components/TeamRegistration/Steps/TeamInfoStep";
 import MemberInfoStep from "@/components/TeamRegistration/Steps/MemberInfoStep";
@@ -12,7 +13,7 @@ import { useTeamRegistration } from "@/hooks/TeamRegistration/useTeamRegistratio
 function TeamRegistration() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  
+
   const {
     teamInfo,
     member1,
@@ -25,7 +26,7 @@ function TeamRegistration() {
     handleEditStep,
     updateTeamInfo,
     updateMember1,
-    updateMember2
+    updateMember2,
   } = useTeamRegistration(currentStep, setCurrentStep);
 
   const steps = [
@@ -106,27 +107,31 @@ function TeamRegistration() {
   };
 
   return (
-    <div
-      className="relative w-full min-h-screen flex items-center justify-center p-4 bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${BG})`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="w-full max-w-4xl">
+    <main className="auth-page">
+      <div className="auth-stack">
         <ProgressBar
           steps={steps}
           currentStep={currentStep}
           onStepClick={(step) => handleEditStep(step)}
         />
-        
-        <div className="bg-[#00274D] backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-2xl border border-white/20">
+
+        <section
+          className="auth-card auth-card-wide"
+          aria-labelledby="buildteam-title"
+        >
           {renderStep()}
-        </div>
+        </section>
       </div>
-    </div>
+
+      <Link to="/">
+        <img
+          className="corner-logo corner-logo-start"
+          src={ELMOCPC}
+          alt="ELMOCPC"
+        />
+      </Link>
+      <img className="corner-logo corner-logo-end" src={CESA} alt="CESA" />
+    </main>
   );
 }
 

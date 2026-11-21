@@ -1,71 +1,116 @@
-// src/pages/LandingPage/components/Sections/PrizesSection.tsx
-import { Medal, Trophy } from "lucide-react";
-import SectionHeader from "../Common/SectionHeader";
+// src/components/Landing/Sections/PrizesSection.tsx
+import { Award, ShieldCheck } from "lucide-react";
+
+const prizes = [
+  { rank: "مقام اول", amount: "۱۵,۰۰۰,۰۰۰ تومان" },
+  { rank: "مقام دوم", amount: "۱۰,۰۰۰,۰۰۰ تومان" },
+  { rank: "مقام سوم", amount: "۵,۰۰۰,۰۰۰ تومان" },
+  { rank: "تیم‌های برتر", amount: "گواهینامه معتبر + هدایای ویژه" },
+];
+
+const rules = [
+  {
+    title: "شرایط شرکت",
+    description:
+      "هر تیم می‌تواند از ۱ تا ۳ نفر تشکیل شود و حضور دانش‌آموزان و دانشجویان در تمامی مقاطع مجاز است",
+  },
+  {
+    title: "مدت زمان مسابقه",
+    description:
+      "مسابقه برای مدت ۵ ساعت متوالی برگزار می‌شود. زمان‌بندی دقیق متعاقبا اعلام می‌شود",
+  },
+  {
+    title: "زبان‌ها و محیط توسعه",
+    description:
+      "زبان‌های C++، Python، Java و JavaScript مورد پذیرش هستند و انتخاب محیط توسعه آزاد است. نسخه‌های استاندارد Python، GCC، Java و Node.js الزامی است",
+  },
+  {
+    title: "قوانین فنی و منابع",
+    description:
+      "استفاده از اینترنت به‌صورت کامل ممنوع است. تنها منابع مجاز، مستندات آفلاین و حداکثر ۲۰ صفحه منابع چاپ‌شده یا دست‌نویس برای کمک قابل استفاده است",
+  },
+  {
+    title: "تجهیزات مجاز و سخت‌افزار",
+    description:
+      "هر تیم تنها مجاز به همراه داشتن یک لپ‌تاپ است. استفاده از چند مانیتور، تبلت یا سخت‌افزار اضافی ممنوع است. نصب نرم‌افزار جدید فقط با اجازه مسئول فنی مجاز است",
+  },
+  {
+    title: "ممنوعیت وسایل الکترونیکی",
+    description:
+      "در هنگام ورود، تلفن‌های همراه از شرکت‌کنندگان دریافت می‌شود. استفاده از هرگونه وسیله ارتباطی یا ابزارهای تولید خودکار کد مانند AI، Copilot و ... ممنوع است",
+  },
+  {
+    title: "تخلفات و رفتار حرفه‌ای",
+    description:
+      "هرگونه تبادل کد یا اطلاعات میان تیم‌ها و رفتار نامناسب باعث حذف تیم خواهد شد. در صورت انجام هرگونه عمل مغایر قوانین، تیم متخلف بدون هیچ استثنایی از ادامه مسابقه حذف خواهد شد",
+  },
+  {
+    title: "سیستم داوری و امتیازدهی",
+    description:
+      "تمام ارسال‌ها توسط داور خودکار بررسی می‌شود و نتیجه داوری نهایی و غیرقابل‌تغییر است. زمان و تعداد ارسال‌ها روی امتیاز نهایی تأثیر دارد. رده‌بندی لحظه‌ای نمایش داده می‌شود اما ۱ ساعت انتهایی فریز خواهد شد",
+  },
+  {
+    title: "خروج موقت",
+    description:
+      "خروج از سالن مسابقه فقط با اجازه داور ممکن است و زمان خروج به تیم اضافه نمی‌شود",
+  },
+  {
+    title: "تحویل نهایی و پلتفرم",
+    description:
+      "تیم باید تمام کدها را در پوشه مشخص‌شده ذخیره کرده و طبق دستورالعمل، در پلتفرم اعلامی آپلود کند",
+  },
+];
 
 const PrizesSection = () => {
-  const prizes = [
-    {
-      rank: "🥇 مقام اول",
-      medal: Medal,
-      reward: "۱۵,۰۰۰,۰۰۰ تومان",
-      color: "from-yellow-500 to-amber-500",
-    },
-    {
-      rank: "🥈 مقام دوم",
-      medal: Medal,
-      reward: "۱۰,۰۰۰,۰۰۰ تومان",
-      color: "from-gray-400 to-gray-300",
-    },
-    {
-      rank: "🥉 مقام سوم",
-      medal: Medal,
-      reward: "۵,۰۰۰,۰۰۰ تومان",
-      color: "from-orange-700 to-orange-600",
-    },
-    {
-      rank: "🏆 تیم‌های برتر",
-      medal: Trophy,
-      reward: "گواهینامه معتبر + هدایای ویژه",
-      color: "from-blue-500 to-cyan-500",
-    },
-  ];
-
   return (
-    <div className="py-20 bg-black/20 backdrop-blur-sm">
-      <div className="container mx-auto px-4">
-        <SectionHeader
-          badge={{
-            text: "🎁 جوایز",
-            icon: "🎁",
-            color: "#FFD500",
-            bgColor: "#FFD500/20",
-            borderColor: "#FFD500/50",
-          }}
-          title="جوایز ارزشمند مسابقه"
-          description="علاوه بر افتخار و اعتبار، جوایز نقدی و جوایز ویژه در انتظار تیم‌های برتر است"
-        />
+    <section className="section section-alt" id="rules" aria-labelledby="prizes-title">
+      <div className="container">
+        <div className="section-block">
+          <div className="section-head">
+            <span className="section-badge">
+              <Award className="icon icon-sm" aria-hidden="true" />
+              جوایز
+            </span>
+            <h2 className="section-title" id="prizes-title">
+              جوایز ارزشمند مسابقه
+            </h2>
+            <p className="section-desc">
+              علاوه بر افتخار و اعتبار، جوایز نقدی و جوایز ویژه در انتظار تیم‌های
+              برتر است
+            </p>
+          </div>
+          <div className="prizes-grid">
+            {prizes.map((prize) => (
+              <article className="card prize-card" key={prize.rank}>
+                <h3 className="prize-rank">{prize.rank}</h3>
+                <p className="prize-amount">{prize.amount}</p>
+              </article>
+            ))}
+          </div>
+        </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6" dir="rtl">
-          {prizes.map((prize, index) => (
-            <div
-              key={index}
-              className="group relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 hover:scale-105 transition-all duration-300"
-            >
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${prize.color} opacity-0 group-hover:opacity-20 rounded-2xl transition-opacity duration-300`}
-              />
-              <prize.medal className="w-12 h-12 mb-4 text-[#FFD500] mx-auto" />
-              <h3 className="text-lg font-bold mb-2 text-white text-center">
-                {prize.rank}
-              </h3>
-              <p className="text-gray-300 text-sm text-center">
-                {prize.reward}
-              </p>
-            </div>
-          ))}
+        <div className="section-block rules-block">
+          <div className="section-head">
+            <span className="section-badge">
+              <ShieldCheck className="icon icon-sm" aria-hidden="true" />
+              قوانین
+            </span>
+            <h2 className="section-title">قوانین و شرایط مسابقه</h2>
+            <p className="section-desc">
+              برای شرکت در مسابقه، این شرایط را به دقت مطالعه کنید
+            </p>
+          </div>
+          <div className="rules-grid">
+            {rules.map((rule) => (
+              <article className="card card-hover rule-card" key={rule.title}>
+                <h3 className="card-title">{rule.title}</h3>
+                <p className="card-text">{rule.description}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

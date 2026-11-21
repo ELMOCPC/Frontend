@@ -36,7 +36,7 @@ const OverviewSection = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="stack-lg">
       <WelcomeBanner name={userData.name} />
 
       <StatsCards

@@ -20,18 +20,17 @@ const MenuItem = ({
   onClick,
 }: MenuItemProps) => {
   const IconComponent = (LucideIcons as any)[icon] as LucideIcon;
+  const isActive = activeTab === id;
 
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-        activeTab === id
-          ? "bg-[#FFD500] text-[#00274D]"
-          : "hover:bg-white/10 text-white"
-      } ${!sidebarOpen && "md:justify-center"}`}
+      className={`sidebar-link${isActive ? " is-active" : ""}`}
+      aria-current={isActive ? "page" : undefined}
     >
-      <IconComponent className="w-5 h-5 flex-shrink-0" />
-      {sidebarOpen && <span className="whitespace-nowrap">{label}</span>}
+      <IconComponent className="icon" aria-hidden="true" />
+      {sidebarOpen && <span className="sidebar-label">{label}</span>}
     </button>
   );
 };

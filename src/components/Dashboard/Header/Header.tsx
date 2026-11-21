@@ -21,47 +21,60 @@ const Header = ({
   setSidebarOpen,
   onNavigateHome,
 }: HeaderProps) => {
-  return (
-    <header className="bg-[#00274D]/70 backdrop-blur-xl border-b border-white/10 sticky top-0 z-40">
-      <div className="px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2.5 hover:bg-white/10 rounded-xl transition-all duration-300"
-          >
-            <ChevronLeft
-              className={`w-6 h-6 transition-transform duration-300 ${
-                sidebarOpen ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          <button
-            onClick={onNavigateHome}
-            className="hidden md:inline-block px-4 py-2 text-sm font-medium bg-[#FFD500] text-[#00274D] rounded-lg hover:bg-[#ffea80] transition-all duration-200"
-          >
-            صفحه اصلی
-          </button>
-        </div>
+  const role = teamData ? (isCaptain ? "کاپیتان تیم" : "عضو تیم") : "بدون تیم";
 
-        <div className="flex items-center gap-5">
-          <div className="flex items-center gap-3 bg-white/5 px-4 py-2.5 rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-[#FFD500] to-[#ffea80] text-[#00274D] font-bold text-lg shadow-md">
+  return (
+    <header className="topbar">
+      <div className="topbar-inner">
+        <button
+          type="button"
+          className="icon-btn"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label="جمع کردن منوی کناری"
+          aria-expanded={sidebarOpen}
+        >
+          <ChevronLeft
+            className={`icon transition-transform${
+              sidebarOpen ? " rotate-180" : ""
+            }`}
+            aria-hidden="true"
+          />
+        </button>
+
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={onNavigateHome}
+        >
+          <svg
+            className="icon-sm"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+          صفحه اصلی
+        </button>
+
+        <div className="topbar-actions">
+          <div className="row">
+            <span className="avatar" aria-hidden="true">
               {userData.name?.charAt(0)}
-              {userData.familyName?.charAt(0)}
-            </div>
-            <div className="flex flex-col">
-              <span className="font-semibold text-sm">
+            </span>
+            <span className="user-meta">
+              <span className="user-name">
                 {userData.name} {userData.familyName}
               </span>
-              <span className="text-[11px] text-gray-300">
-                {teamData
-                  ? isCaptain
-                    ? "کاپیتان تیم"
-                    : "عضو تیم"
-                  : "بدون تیم"}
-              </span>
-            </div>
-            <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
+              <span className="user-role">{role}</span>
+            </span>
+            <span className="badge badge-success">
+              <span className="dot" aria-hidden="true" />
               فعال
             </span>
           </div>

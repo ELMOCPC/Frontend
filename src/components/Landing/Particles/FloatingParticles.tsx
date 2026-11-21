@@ -12,10 +12,16 @@ interface Particle {
   speed: number;
 }
 
-const FloatingParticles = () => {
-  const [particles, setParticles] = useState<Particle[]>([]);
+const FloatingParticles = ({
+  particles: providedParticles,
+}: {
+  particles?: Particle[];
+} = {}) => {
+  const [generatedParticles, setGeneratedParticles] = useState<Particle[]>([]);
+  const particles = providedParticles ?? generatedParticles;
 
   useEffect(() => {
+    if (providedParticles) return;
     const colors = ["#FFD500", "#46BEF6", "#D7263D", "#ffffff"];
 
     const newParticles = [...Array(40)].map((_, i) => ({
@@ -30,8 +36,8 @@ const FloatingParticles = () => {
       speed: Math.random() * 50 + 30,
     }));
 
-    setParticles(newParticles);
-  }, []);
+    setGeneratedParticles(newParticles);
+  }, [providedParticles]);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">

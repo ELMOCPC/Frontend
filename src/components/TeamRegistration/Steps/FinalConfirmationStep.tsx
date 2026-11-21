@@ -5,14 +5,8 @@ import {
   ArrowLeft,
   Users,
   AlertCircle,
-  Mail,
-  Smartphone,
-  GraduationCap,
-  Shield,
   ChevronDown,
-  ChevronUp,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import FormHeader from "../Common/FormHeader";
 import EditButton from "../FormControls/EditButton";
 import { cn } from "@/lib/utils";
@@ -42,6 +36,41 @@ interface AdvancedFinalConfirmationStepProps {
   isSubmitting: boolean;
 }
 
+interface MemberFieldProps {
+  label: string;
+  value: string;
+  ltr?: boolean;
+}
+
+const MemberField = ({ label, value, ltr = false }: MemberFieldProps) => (
+  <div className="user-field">
+    <div className="user-field-key">{label}</div>
+    <div className="user-field-val" dir={ltr ? "ltr" : "rtl"}>
+      {value || "—"}
+    </div>
+  </div>
+);
+
+const notes: { text: string; tone?: string }[] = [
+  {
+    text: "پس از ارسال دعوت، اعضا باید دعوت‌نامه را از طریق ایمیل تأیید کنند",
+  },
+  {
+    text: "تیم پس از قبول دعوت توسط همه اعضا فعال و قابل استفاده می‌شود",
+  },
+  {
+    text: 'می‌توانید از بخش "تیم من" در داشبورد وضعیت دعوت‌ها را پیگیری کنید',
+  },
+  {
+    text: "امکان ویرایش اطلاعات پس از ارسال دعوت وجود ندارد",
+    tone: "text-danger",
+  },
+  {
+    text: "اطمینان حاصل کنید که اطلاعات تماس اعضا صحیح است",
+    tone: "text-warning",
+  },
+];
+
 const AdvancedFinalConfirmationStep = ({
   teamInfo,
   member1,
@@ -65,61 +94,58 @@ const AdvancedFinalConfirmationStep = ({
     }));
   };
 
+  const invitedCount = [member1, member2].filter(
+    (member) => member.name || member.email
+  ).length;
+
   const renderTeamInfo = () => (
     <div
-      className="bg-gradient-to-r from-[#FFD500]/10 to-[#FFD500]/5 border border-[#FFD500]/30 rounded-xl overflow-hidden mb-4"
-      dir="rtl"
+      className={cn(
+        "accordion-item",
+        expandedSections.team && "is-open"
+      )}
     >
       <button
+        type="button"
+        className="accordion-trigger"
         onClick={() => toggleSection("team")}
-        className="w-full flex items-center justify-between p-4 md:p-6 hover:bg-white/5 transition-all duration-200"
+        aria-expanded={expandedSections.team}
       >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-[#FFD500] to-[#ffea80] rounded-full flex items-center justify-center">
-            <Users className="w-5 h-5 text-[#00274D]" />
-          </div>
-          <div className="text-right">
-            <h3 className="text-white font-semibold text-lg">اطلاعات تیم</h3>
-            <p className="text-gray-400 text-sm">{teamInfo.teamName}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <EditButton
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditStep(0);
-            }}
-            label="ویرایش"
-          />
-          {expandedSections.team ? (
-            <ChevronUp className="w-5 h-5 text-gray-400" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-gray-400" />
-          )}
-        </div>
+        <span className="row">
+          <span className="badge badge-warning">
+            <Users className="icon-sm" aria-hidden="true" />
+            اطلاعات تیم
+          </span>
+          <span className="list-main">
+            <span className="list-title">
+              {teamInfo.teamName || "تیم بدون نام"}
+            </span>
+            <span className="list-meta">اطلاعات ثبت‌شده تیم</span>
+          </span>
+        </span>
+        <ChevronDown
+          className="accordion-chevron icon"
+          aria-hidden="true"
+        />
       </button>
 
       {expandedSections.team && (
-        <div className="px-4 md:px-6 pb-4 md:pb-6 border-t border-white/10 pt-4">
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-gray-400 text-sm mb-1">نام تیم</h4>
-              <p className="text-white text-xl font-bold bg-white/5 p-3 rounded-lg">
-                {teamInfo.teamName}
-              </p>
-            </div>
+        <div className="accordion-panel">
+          <div className="card-actions">
+            <EditButton onClick={() => onEditStep(0)} label="ویرایش" />
+          </div>
 
-            {teamInfo.teamDescription && (
-              <div>
-                <h4 className="text-gray-400 text-sm mb-1">توضیحات تیم</h4>
-                <div className="bg-white/5 p-3 rounded-lg">
-                  <p className="text-white text-sm whitespace-pre-wrap leading-relaxed">
-                    {teamInfo.teamDescription}
-                  </p>
-                </div>
-              </div>
-            )}
+          <div className="kv-list">
+            <div className="kv-row">
+              <span className="kv-key">نام تیم</span>
+              <span className="kv-value">{teamInfo.teamName || "—"}</span>
+            </div>
+            <div className="kv-row">
+              <span className="kv-key">توضیحات تیم</span>
+              <span className="kv-value">
+                {teamInfo.teamDescription || "—"}
+              </span>
+            </div>
           </div>
         </div>
       )}
@@ -132,103 +158,63 @@ const AdvancedFinalConfirmationStep = ({
     memberNumber: number,
     sectionKey: "member1" | "member2"
   ) => {
-    // const memberIcon =
-    //   memberNumber === 1 ? (
-    //     <Mail className="w-4 h-4" />
-    //   ) : (
-    //     <Smartphone className="w-4 h-4" />
-    //   );
-
     return (
-      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden mb-4">
+      <div
+        className={cn(
+          "accordion-item",
+          expandedSections[sectionKey] && "is-open"
+        )}
+      >
         <button
+          type="button"
+          className="accordion-trigger"
           onClick={() => toggleSection(sectionKey)}
-          className="w-full flex items-center justify-between p-4 md:p-6 hover:bg-white/5 transition-all duration-200"
+          aria-expanded={expandedSections[sectionKey]}
         >
-          <div className="flex items-center gap-3">
-            <div
-              className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center",
-                memberNumber === 1
-                  ? "bg-gradient-to-br from-[#FFD500] to-[#ffea80]"
-                  : "bg-gradient-to-br from-[#FFD500] to-[#ffea80]"
-              )}
-            >
-              <div className="text-black font-bold text-sm">
-                {memberNumber === 1 ? "۲" : "۳"}
-              </div>
-            </div>
-            <div className="text-right">
-              <h3 className="text-white font-semibold text-lg">{title}</h3>
-              <p className="text-gray-400 text-sm">
-                {member.name} {member.familyName}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <EditButton
-              onClick={(e) => {
-                e.stopPropagation();
-                onEditStep(memberNumber);
-              }}
-              label="ویرایش"
-            />
-            {expandedSections[sectionKey] ? (
-              <ChevronUp className="w-5 h-5 text-gray-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-gray-400" />
-            )}
-          </div>
+          <span className="row">
+            <span className="badge badge-primary">
+              {memberNumber === 1 ? "۲" : "۳"}
+            </span>
+            <span className="list-main">
+              <span className="list-title">{title}</span>
+              <span className="list-meta">
+                {member.name || member.familyName
+                  ? `${member.name} ${member.familyName}`.trim()
+                  : "اطلاعات عضو ثبت نشده است"}
+              </span>
+            </span>
+          </span>
+          <ChevronDown
+            className="accordion-chevron icon"
+            aria-hidden="true"
+          />
         </button>
 
         {expandedSections[sectionKey] && (
-          <div className="px-4 md:px-6 pb-4 md:pb-6 border-t border-white/10 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoCard
-                icon={<Users className="w-4 h-4" />}
+          <div className="accordion-panel">
+            <div className="card-actions">
+              <EditButton
+                onClick={() => onEditStep(memberNumber)}
+                label="ویرایش"
+              />
+            </div>
+
+            <div className="user-fields">
+              <MemberField
                 label="نام و نام خانوادگی"
-                value={`${member.name} ${member.familyName}`}
-                color="text-blue-400"
+                value={`${member.name} ${member.familyName}`.trim()}
               />
-
-              <InfoCard
-                icon={<Mail className="w-4 h-4" />}
-                label="ایمیل"
-                value={member.email}
-                isLtr
-                color="text-cyan-400"
+              <MemberField label="ایمیل" value={member.email} ltr />
+              <MemberField label="شماره موبایل" value={member.phone} ltr />
+              <MemberField label="دانشگاه" value={member.university} />
+              <MemberField
+                label="کد ملی"
+                value={member.nationalCode ?? ""}
+                ltr
               />
-
-              <InfoCard
-                icon={<Smartphone className="w-4 h-4" />}
-                label="شماره موبایل"
-                value={member.phone}
-                isLtr
-                color="text-green-400"
-              />
-
-              <InfoCard
-                icon={<GraduationCap className="w-4 h-4" />}
-                label="دانشگاه"
-                value={member.university}
-                color="text-amber-400"
-              />
-
-              {member.nationalCode && (
-                <InfoCard
-                  icon={<Shield className="w-4 h-4" />}
-                  label="کد ملی"
-                  value={member.nationalCode}
-                  color="text-purple-400"
-                />
-              )}
-
-              <InfoCard
-                icon="👕"
+              <MemberField
                 label="سایز تیشرت"
                 value={member.tshirtSize || "M"}
-                color="text-red-400"
               />
             </div>
           </div>
@@ -236,37 +222,6 @@ const AdvancedFinalConfirmationStep = ({
       </div>
     );
   };
-
-  const InfoCard = ({
-    icon,
-    label,
-    value,
-    isLtr = false,
-    color = "text-white",
-  }: {
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-    isLtr?: boolean;
-    color?: string;
-  }) => (
-    <div className="bg-white/5 rounded-lg p-3 hover:bg-white/10 transition-all duration-200">
-      <div className="flex items-center gap-2 mb-2">
-        {typeof icon === "string" ? (
-          <span className="text-lg">{icon}</span>
-        ) : (
-          icon
-        )}
-        <span className="text-gray-400 text-sm">{label}</span>
-      </div>
-      <p
-        className={cn("font-medium truncate", color)}
-        dir={isLtr ? "ltr" : "rtl"}
-      >
-        {value}
-      </p>
-    </div>
-  );
 
   const handleSubmit = async () => {
     // Show confirmation modal before submitting
@@ -287,122 +242,106 @@ const AdvancedFinalConfirmationStep = ({
         description="تمام اطلاعات وارد شده را با دقت بررسی کنید"
       />
 
-      {/* اطلاعات تیم */}
-      {renderTeamInfo()}
+      <div className="accordion">
+        {/* اطلاعات تیم */}
+        {renderTeamInfo()}
 
-      {/* اطلاعات اعضا */}
-      <div dir="rtl">
+        {/* اطلاعات اعضا */}
         {renderMemberInfo(member1, "عضو دوم", 1, "member1")}
         {renderMemberInfo(member2, "عضو سوم", 2, "member2")}
-      </div>
 
-      {/* نکات مهم */}
-      <div className="mb-6">
-        <button
-          onClick={() => toggleSection("notes")}
-          className="w-full flex items-center justify-between p-4 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-xl transition-all duration-200"
-        >
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-blue-400" />
-            <h4 className="text-blue-400 font-semibold">
-              نکات مهم قبل از ارسال
-            </h4>
-          </div>
-          {expandedSections.notes ? (
-            <ChevronUp className="w-5 h-5 text-blue-400" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-blue-400" />
+        {/* نکات مهم */}
+        <div
+          className={cn(
+            "accordion-item",
+            expandedSections.notes && "is-open"
           )}
-        </button>
+        >
+          <button
+            type="button"
+            className="accordion-trigger"
+            onClick={() => toggleSection("notes")}
+            aria-expanded={expandedSections.notes}
+          >
+            <span className="row">
+              <AlertCircle className="icon text-accent" aria-hidden="true" />
+              <span className="list-title">نکات مهم قبل از ارسال</span>
+            </span>
+            <ChevronDown
+              className="accordion-chevron icon"
+              aria-hidden="true"
+            />
+          </button>
 
-        {expandedSections.notes && (
-          <div className="mt-2 bg-blue-500/5 border border-blue-500/20 rounded-lg p-4"
-          dir="rtl">
-            <ul className="text-sm text-gray-300 space-y-2 mr-4">
-              <li className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-blue-400 rounded-full mt-1.5 flex-shrink-0" />
-                <span>
-                  پس از ارسال دعوت، اعضا باید دعوتنامه را از طریق ایمیل تأیید
-                  کنند
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-blue-400 rounded-full mt-1.5 flex-shrink-0" />
-                <span>
-                  تیم پس از قبول دعوت توسط همه اعضا فعال و قابل استفاده می‌شود
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-blue-400 rounded-full mt-1.5 flex-shrink-0" />
-                <span>
-                  می‌توانید از بخش "تیم من" در داشبورد وضعیت دعوت‌ها را پیگیری
-                  کنید
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-red-400 rounded-full mt-1.5 flex-shrink-0" />
-                <span className="text-red-300">
-                  امکان ویرایش اطلاعات پس از ارسال دعوت وجود ندارد
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-amber-400 rounded-full mt-1.5 flex-shrink-0" />
-                <span className="text-amber-300">
-                  اطمینان حاصل کنید که اطلاعات تماس اعضا صحیح است
-                </span>
-              </li>
-            </ul>
-          </div>
-        )}
+          {expandedSections.notes && (
+            <div className="accordion-panel">
+              <div className="alert alert-info">
+                <AlertCircle
+                  className="alert-icon icon"
+                  aria-hidden="true"
+                />
+                <div className="stack">
+                  <p className="alert-title">نکات مهم قبل از ارسال</p>
+                  <ul className="stack small">
+                    {notes.map((note) => (
+                      <li key={note.text} className={note.tone}>
+                        {note.text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* دکمه‌های ناوبری */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Button
+      <div className="form-actions form-actions-fill">
+        <button
           type="button"
           onClick={onBack}
           disabled={isSubmitting}
-          className="flex-1 bg-gradient-to-r from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 border border-white/10"
+          className="btn btn-ghost btn-lg"
         >
-          <ArrowLeft className="w-5 h-5 ml-2 inline-block" />
+          <ArrowLeft className="icon" aria-hidden="true" />
           بازگشت به ویرایش
-        </Button>
+        </button>
 
-        <Button
+        <button
+          type="button"
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="flex-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-green-500/20 focus:outline-none focus:ring-2 focus:ring-green-500/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn btn-yellow btn-lg"
         >
           {isSubmitting ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <>
+              <span className="spinner" />
               <span>در حال ارسال دعوت...</span>
-            </div>
+            </>
           ) : (
-            <div className="flex items-center justify-center gap-2">
-              <CheckCircle className="w-5 h-5" />
-              <span className="font-bold">ارسال دعوت به اعضا</span>
-            </div>
+            <>
+              <CheckCircle className="icon" aria-hidden="true" />
+              <span>ارسال دعوت به اعضا</span>
+            </>
           )}
-        </Button>
+        </button>
       </div>
 
       {/* وضعیت */}
-      <div className="mt-6 pt-4 border-t border-white/10">
-        <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-gray-400">تیم آماده ثبت</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <span className="text-gray-400">۲ عضو برای دعوت</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-            <span className="text-gray-400">در انتظار تأیید</span>
-          </div>
-        </div>
+      <div className="row">
+        <span className="badge badge-success">
+          <span className="dot" aria-hidden="true" />
+          تیم آماده ثبت
+        </span>
+        <span className="badge badge-primary">
+          <span className="dot" aria-hidden="true" />
+          {invitedCount} عضو برای دعوت
+        </span>
+        <span className="badge badge-warning">
+          <span className="dot" aria-hidden="true" />
+          در انتظار تأیید
+        </span>
       </div>
     </div>
   );

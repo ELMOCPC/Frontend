@@ -10,48 +10,48 @@ interface StatsCardsProps {
   };
 }
 
+const getStatusVariant = (color: string) => {
+  if (color.includes("green")) return "is-accepted";
+  if (color.includes("blue")) return "is-submitted";
+  if (color.includes("yellow") || color.includes("orange")) return "is-waiting";
+  if (color.includes("red")) return "is-rejected";
+  return "is-draft";
+};
+
 const StatsCards = ({
   teamMembers,
   daysLeft,
   registrationStatus,
 }: StatsCardsProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+    <div className="stats-grid">
       {/* اعضای تیم */}
-      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:p-6">
-        <div className="flex items-center justify-between mb-3 md:mb-4">
-          <div className="p-2 md:p-3 bg-blue-500/20 rounded-lg">
-            <Users className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
-          </div>
-          <span className="text-2xl md:text-3xl font-bold">{teamMembers}</span>
-        </div>
-        <h3 className="text-gray-300 text-sm md:text-base">اعضای تیم</h3>
+      <div className="stat-card">
+        <span className="stat-icon is-cyan" aria-hidden="true">
+          <Users className="icon" />
+        </span>
+        <p className="stat-value">{teamMembers}</p>
+        <p className="stat-label">اعضای تیم</p>
       </div>
 
       {/* روز تا مسابقه */}
-      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:p-6">
-        <div className="flex items-center justify-between mb-3 md:mb-4">
-          <div className="p-2 md:p-3 bg-yellow-500/20 rounded-lg">
-            <Clock className="w-6 h-6 md:w-8 md:h-8 text-yellow-400" />
-          </div>
-          <span className="text-2xl md:text-3xl font-bold">{daysLeft}</span>
-        </div>
-        <h3 className="text-gray-300 text-sm md:text-base">روز تا مسابقه</h3>
+      <div className="stat-card">
+        <span className="stat-icon is-yellow" aria-hidden="true">
+          <Clock className="icon" />
+        </span>
+        <p className="stat-value">{daysLeft}</p>
+        <p className="stat-label">روز تا مسابقه</p>
       </div>
 
       {/* وضعیت ثبت‌نام */}
-      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:p-6">
-        <div className="flex items-center justify-between mb-3 md:mb-4">
-          <div className="p-2 md:p-3 bg-green-500/20 rounded-lg">
-            <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-green-400" />
-          </div>
-          <span
-            className={`text-sm font-bold px-3 py-1 rounded-full ${registrationStatus.color}`}
-          >
-            {registrationStatus.text}
-          </span>
-        </div>
-        <h3 className="text-gray-300 text-sm md:text-base">وضعیت ثبت‌نام</h3>
+      <div className="stat-card">
+        <span className="stat-icon is-green" aria-hidden="true">
+          <CheckCircle className="icon" />
+        </span>
+        <span className={`status-pill ${getStatusVariant(registrationStatus.color)}`}>
+          {registrationStatus.text}
+        </span>
+        <p className="stat-label">وضعیت ثبت‌نام</p>
       </div>
     </div>
   );
