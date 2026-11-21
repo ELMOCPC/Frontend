@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ششمین دوره مسابقات برنامه‌نویسی دانشجویی دانشگاه علم و صنعت — ELMOCPC 2025"
+    />
+    <title>ELMOCPC 2026 — ششمین دوره مسابقات برنامه‌نویسی دانشجویی</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ============ Navbar (fixed, G5) ============ -->
+    <header class="navbar">
+      <div class="navbar-inner container">
+        <a class="brand" href="#home">
+          <span class="wordmark wordmark-sm"
+            ><span class="wm-elmo">ELMO</span><span class="wm-c1">C</span
+            ><span class="wm-p">P</span><span class="wm-c2">C</span
+            ><span class="wm-year"> 2026</span></span
+          >
+        </a>
+        <nav class="nav-links" aria-label="ناوبری اصلی">
+          <a class="nav-link is-active" href="#home">
+            <svg
+              class="icon icon-sm"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            خانه
+          </a>
+          <a class="nav-link" href="#about">
+            <svg
+              class="icon icon-sm"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" />
+              <path d="M12 8h.01" />
+            </svg>
+            درباره مسابقه
+          </a>
+          <a class="nav-link" href="#timeline">
+            <svg
+              class="icon icon-sm"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect width="18" height="18" x="3" y="4" rx="2" />
+              <path d="M16 2v4" />
+              <path d="M8 2v4" />
+              <path d="M3 10h18" />
+            </svg>
+            جدول زمانی
+          </a>
+          <a class="nav-link" href="#rules">
+            <svg
+              class="icon icon-sm"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+              <path d="M4 22h16" />
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+            </svg>
+            قوانین و جوایز
+          </a>
+          <a class="nav-link" href="#contact">
+            <svg
+              class="icon icon-sm"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            تماس با ما
+          </a>
+        </nav>
+        <div class="nav-auth">
+          <a class="btn btn-ghost" href="login.html">ورود</a>
+          <a class="btn btn-primary" href="signup.html">ثبت‌نام</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- ============ Hero ============ -->
+      <section class="hero" id="home">
+        <div class="container hero-inner">
+          <img
+            class="hero-logo"
+            src="data:image/png;base64,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" />
+            alt="ELMOCPC Logo"
+          />
+          <p class="wordmark wordmark-hero"
+            ><span class="wm-elmo">ELMO</span><span class="wm-c1">C</span
+            ><span class="wm-p">P</span><span class="wm-c2">C</span
+            ><span class="wm-year"> 2025</span></p
+          >
+          <h1 class="hero-title">
+            پنجمین دوره مسابقات برنامه‌نویسی دانشجویی دانشگاه علم و صنعت
+          </h1>
+          <p class="hero-highlight">
+            🏆 اولین دوره حضوری - فرصت استثنایی برای رقابت و یادگیری
+          </p>
+
+          <div class="countdown-block">
+            <p class="countdown-caption">
+              <svg
+                class="icon icon-sm"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              زمان باقی‌مانده تا روز مسابقه
+            </p>
+            <div class="countdown" dir="ltr" aria-label="شمارش معکوس تا روز مسابقه">
+              <div class="countdown-unit">
+                <span class="countdown-value">08</span>
+                <span class="countdown-label">روز</span>
+              </div>
+              <div class="countdown-unit">
+                <span class="countdown-value">14</span>
+                <span class="countdown-label">ساعت</span>
+              </div>
+              <div class="countdown-unit">
+                <span class="countdown-value">25</span>
+                <span class="countdown-label">دقیقه</span>
+              </div>
+              <div class="countdown-unit">
+                <span class="countdown-value">40</span>
+                <span class="countdown-label">ثانیه</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-ctas">
+            <a class="btn btn-primary btn-lg" href="signup.html">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                <path d="M4 22h16" />
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+              </svg>
+              ثبت‌نام در مسابقه
+            </a>
+            <a class="btn btn-secondary btn-lg" href="login.html">
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                <polyline points="10 17 15 12 10 7" />
+                <line x1="15" x2="3" y1="12" y2="12" />
+              </svg>
+              ورود به حساب کاربری
+            </a>
+          </div>
+
+          <ul class="chips">
+            <li class="chip">
+              <svg
+                class="icon icon-sm icon-cyan"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              تیم‌های حداکثر ۳ نفره
+            </li>
+            <li class="chip">
+              <svg
+                class="icon icon-sm icon-yellow"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              ۵ ساعت رقابت فشرده
+            </li>
+            <li class="chip">
+              <svg
+                class="icon icon-sm icon-red"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="8" r="6" />
+                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+              </svg>
+              جوایز نقدی و هدیه های دیگر
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ Stats (4) ============ -->
+      <section class="section stats-section" aria-label="آمار مسابقه">
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-value">15+</span>
+              <span class="stat-label">دانشگاه شرکت‌کننده</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">1200+</span>
+              <span class="stat-label">شرکت‌کننده</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">5</span>
+              <span class="stat-label">سال تجربه موفق</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value">200+</span>
+              <span class="stat-label">تیم ثبت‌نام‌شده</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ About / features ============ -->
+      <section class="section section-alt" id="about" aria-labelledby="about-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="section-title" id="about-title">
+              چرا در ELMOCPC شرکت کنیم؟
+            </h2>
+            <p class="section-desc">
+              پنجمین دوره مسابقات برنامه‌نویسی دانشجویی دانشگاه علم و صنعت،
+              فرصتی استثنایی برای سنجش مهارت‌ها، یادگیری تیمی و آمادگی برای
+              مسابقات ملی
+            </p>
+          </div>
+          <div class="features-grid">
+            <article class="card card-hover feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg
+                  class="icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                  <path d="M4 22h16" />
+                  <path
+                    d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+                  />
+                  <path
+                    d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+                  />
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                </svg>
+              </span>
+              <h3 class="card-title">مسابقه حضوری ویژه</h3>
+              <p class="card-text">
+                اولین دوره حضوری ELMOCPC با امکانات و فضای رقابتی حرفه‌ای در
+                دانشگاه علم و صنعت
+              </p>
+            </article>
+            <article class="card card-hover feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg
+                  class="icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </span>
+              <h3 class="card-title">رقابت تیمی</h3>
+              <p class="card-text">
+                شرکت در قالب تیم‌های ۳ نفره و تجربه کار گروهی واقعی در محیط
+                دانشگاه
+              </p>
+            </article>
+            <article class="card card-hover feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg
+                  class="icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <circle cx="12" cy="12" r="6" />
+                  <circle cx="12" cy="12" r="2" />
+                </svg>
+              </span>
+              <h3 class="card-title">شبیه‌سازی آزمون کشوری</h3>
+              <p class="card-text">
+                آماده‌سازی برای مسابقات ملی با استانداردهای بین‌المللی ICPC
+              </p>
+            </article>
+            <article class="card card-hover feature-card">
+              <span class="feature-icon" aria-hidden="true">
+                <svg
+                  class="icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="8" width="18" height="4" rx="1" />
+                  <path d="M12 8v13" />
+                  <path
+                    d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"
+                  />
+                  <path
+                    d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"
+                  />
+                </svg>
+              </span>
+              <h3 class="card-title">جوایز ارزشمند</h3>
+              <p class="card-text">
+                30 میلیون تومان جایزه نقدی و هدایای ویژه برای تیم‌های برتر
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Timeline (time table) ============ -->
+      <section class="section" id="timeline" aria-labelledby="timeline-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="section-title" id="timeline-title">
+              برنامه زمانی مسابقه
+            </h2>
+            <p class="section-desc">
+              از ثبت‌نام تا برگزاری مسابقه و مراسم اختتامیه
+            </p>
+          </div>
+          <ol class="timeline">
+            <li class="timeline-item is-done">
+              <span class="timeline-dot" aria-hidden="true"></span>
+              <div class="timeline-body">
+                <div class="timeline-meta">
+                  <span class="timeline-date">۱ تا ۵ آذر ۱۴۰۴</span>
+                  <span class="badge badge-success"
+                    ><span class="dot" aria-hidden="true"></span>تکمیل
+                    شده</span
+                  >
+                </div>
+                <h3 class="timeline-title">ثبت نام بوت کمپ</h3>
+                <p class="timeline-desc">
+                  ثبت‌نام در کارگاه‌های آموزشی آمادگی برای مسابقه
+                </p>
+              </div>
+            </li>
+            <li class="timeline-item is-active">
+              <span class="timeline-dot" aria-hidden="true"></span>
+              <div class="timeline-body">
+                <div class="timeline-meta">
+                  <span class="timeline-date">۷ آذر ۱۴۰۴</span>
+                  <span class="badge badge-warning"
+                    ><span class="dot" aria-hidden="true"></span>در جریان</span
+                  >
+                </div>
+                <h3 class="timeline-title">شروع ثبت‌نام مسابقه</h3>
+                <p class="timeline-desc">
+                  شروع فرآیند ثبت‌نام برای مسابقه اصلی
+                </p>
+              </div>
+            </li>
+            <li class="timeline-item is-upcoming">
+              <span class="timeline-dot" aria-hidden="true"></span>
+              <div class="timeline-body">
+                <div class="timeline-meta">
+                  <span class="timeline-date">۱۵ آذر ۱۴۰۴</span>
+                  <span class="badge badge-neutral"
+                    ><span class="dot" aria-hidden="true"></span>پیش رو</span
+                  >
+                </div>
+                <h3 class="timeline-title">پایان مهلت ثبت‌نام</h3>
+                <p class="timeline-desc">
+                  آخرین فرصت برای ثبت‌نام در مسابقه
+                </p>
+              </div>
+            </li>
+            <li class="timeline-item is-upcoming">
+              <span class="timeline-dot" aria-hidden="true"></span>
+              <div class="timeline-body">
+                <div class="timeline-meta">
+                  <span class="timeline-date">۱۸ آذر ۱۴۰۴</span>
+                  <span class="badge badge-neutral"
+                    ><span class="dot" aria-hidden="true"></span>پیش رو</span
+                  >
+                </div>
+                <h3 class="timeline-title">اعلام لیست نهایی تیم‌ها</h3>
+                <p class="timeline-desc">
+                  اعلام اسامی تیم‌های واجد شرایط برای شرکت در مسابقه
+                </p>
+              </div>
+            </li>
+            <li class="timeline-item is-upcoming">
+              <span class="timeline-dot" aria-hidden="true"></span>
+              <div class="timeline-body">
+                <div class="timeline-meta">
+                  <span class="timeline-date">۲۱ آذر ۱۴۰۴</span>
+                  <span class="badge badge-neutral"
+                    ><span class="dot" aria-hidden="true"></span>پیش رو</span
+                  >
+                </div>
+                <h3 class="timeline-title">روز برگزاری مسابقه</h3>
+                <p class="timeline-desc">
+                  برگزاری مسابقه در دانشگاه علم و صنعت
+                </p>
+              </div>
+            </li>
+            <li class="timeline-item is-upcoming">
+              <span class="timeline-dot" aria-hidden="true"></span>
+              <div class="timeline-body">
+                <div class="timeline-meta">
+                  <span class="timeline-date">۲۱ آذر ۱۴۰۴</span>
+                  <span class="badge badge-neutral"
+                    ><span class="dot" aria-hidden="true"></span>پیش رو</span
+                  >
+                </div>
+                <h3 class="timeline-title">
+                  مراسم اختتامیه و اهدای جوایز
+                </h3>
+                <p class="timeline-desc">
+                  مراسم اختتامیه و اهدای جوایز به تیم‌های برتر
+                </p>
+              </div>
+            </li>
+          </ol>
+          <div class="legend" aria-label="راهنمای وضعیت رویدادها">
+            <span class="badge badge-success"
+              ><span class="dot" aria-hidden="true"></span>تکمیل شده</span
+            >
+            <span class="badge badge-warning"
+              ><span class="dot" aria-hidden="true"></span>در جریان</span
+            >
+            <span class="badge badge-neutral"
+              ><span class="dot" aria-hidden="true"></span>پیش رو</span
+            >
+          </div>
+        </div>
+      </section>
+      <!-- ============ Rules & rewards (prizes + rules, G4 grouping) ============ -->
+      <section class="section section-alt" id="rules" aria-labelledby="prizes-title">
+        <div class="container">
+          <div class="section-block">
+            <div class="section-head">
+              <span class="section-badge">
+                <svg
+                  class="icon icon-sm"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="8" r="6" />
+                  <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+                </svg>
+                جوایز
+              </span>
+              <h2 class="section-title" id="prizes-title">
+                جوایز ارزشمند مسابقه
+              </h2>
+              <p class="section-desc">
+                علاوه بر افتخار و اعتبار، جوایز نقدی و جوایز ویژه در انتظار
+                تیم‌های برتر است
+              </p>
+            </div>
+            <div class="prizes-grid">
+              <article class="card prize-card">
+                <h3 class="prize-rank">مقام اول</h3>
+                <p class="prize-amount">۱۵,۰۰۰,۰۰۰ تومان</p>
+              </article>
+              <article class="card prize-card">
+                <h3 class="prize-rank">مقام دوم</h3>
+                <p class="prize-amount">۱۰,۰۰۰,۰۰۰ تومان</p>
+              </article>
+              <article class="card prize-card">
+                <h3 class="prize-rank">مقام سوم</h3>
+                <p class="prize-amount">۵,۰۰۰,۰۰۰ تومان</p>
+              </article>
+              <article class="card prize-card">
+                <h3 class="prize-rank">تیم‌های برتر</h3>
+                <p class="prize-amount">گواهینامه معتبر + هدایای ویژه</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="section-block rules-block">
+            <div class="section-head">
+              <span class="section-badge">
+                <svg
+                  class="icon icon-sm"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+                  />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+                قوانین
+              </span>
+              <h2 class="section-title">قوانین و شرایط مسابقه</h2>
+              <p class="section-desc">
+                برای شرکت در مسابقه، این شرایط را به دقت مطالعه کنید
+              </p>
+            </div>
+            <div class="rules-grid">
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">شرایط شرکت</h3>
+                <p class="card-text">
+                  هر تیم می‌تواند از ۱ تا ۳ نفر تشکیل شود و حضور دانش‌آموزان و
+                  دانشجویان در تمامی مقاطع مجاز است
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">مدت زمان مسابقه</h3>
+                <p class="card-text">
+                  مسابقه برای مدت ۵ ساعت متوالی برگزار می‌شود. زمان‌بندی دقیق
+                  متعاقبا اعلام می‌شود
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">زبان‌ها و محیط توسعه</h3>
+                <p class="card-text">
+                  زبان‌های C++، Python، Java و JavaScript مورد پذیرش هستند و
+                  انتخاب محیط توسعه آزاد است. نسخه‌های استاندارد Python، GCC،
+                  Java و Node.js الزامی است
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">قوانین فنی و منابع</h3>
+                <p class="card-text">
+                  استفاده از اینترنت به‌صورت کامل ممنوع است. تنها منابع مجاز،
+                  مستندات آفلاین و حداکثر ۲۰ صفحه منابع چاپ‌شده یا دست‌نویس برای
+                  کمک قابل استفاده است
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">تجهیزات مجاز و سخت‌افزار</h3>
+                <p class="card-text">
+                  هر تیم تنها مجاز به همراه داشتن یک لپ‌تاپ است. استفاده از چند
+                  مانیتور، تبلت یا سخت‌افزار اضافی ممنوع است. نصب نرم‌افزار جدید
+                  فقط با اجازه مسئول فنی مجاز است
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">ممنوعیت وسایل الکترونیکی</h3>
+                <p class="card-text">
+                  در هنگام ورود، تلفن‌های همراه از شرکت‌کنندگان دریافت می‌شود.
+                  استفاده از هرگونه وسیله ارتباطی یا ابزارهای تولید خودکار کد
+                  مانند AI، Copilot و ... ممنوع است
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">تخلفات و رفتار حرفه‌ای</h3>
+                <p class="card-text">
+                  هرگونه تبادل کد یا اطلاعات میان تیم‌ها و رفتار نامناسب باعث
+                  حذف تیم خواهد شد. در صورت انجام هرگونه عمل مغایر قوانین، تیم
+                  متخلف بدون هیچ استثنایی از ادامه مسابقه حذف خواهد شد
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">سیستم داوری و امتیازدهی</h3>
+                <p class="card-text">
+                  تمام ارسال‌ها توسط داور خودکار بررسی می‌شود و نتیجه داوری نهایی
+                  و غیرقابل‌تغییر است. زمان و تعداد ارسال‌ها روی امتیاز نهایی
+                  تأثیر دارد. رده‌بندی لحظه‌ای نمایش داده می‌شود اما ۱ ساعت
+                  انتهایی فریز خواهد شد
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">خروج موقت</h3>
+                <p class="card-text">
+                  خروج از سالن مسابقه فقط با اجازه داور ممکن است و زمان خروج به
+                  تیم اضافه نمی‌شود
+                </p>
+              </article>
+              <article class="card card-hover rule-card">
+                <h3 class="card-title">تحویل نهایی و پلتفرم</h3>
+                <p class="card-text">
+                  تیم باید تمام کدها را در پوشه مشخص‌شده ذخیره کرده و طبق
+                  دستورالعمل، در پلتفرم اعلامی آپلود کند
+                </p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CTA band ============ -->
+      <section class="section cta-section" aria-labelledby="cta-title">
+        <div class="container">
+          <div class="cta-band">
+            <h2 class="cta-title" id="cta-title">فرصت را از دست ندهید!</h2>
+            <p class="cta-desc">
+              همین حالا در پنجمین دوره مسابقات برنامه‌نویسی دانشجویی دانشگاه
+              علم و صنعت ثبت‌نام کنید و در رقابتی فراموش‌نشدنی شرکت نمایید
+            </p>
+            <div class="cta-stats">
+              <div class="cta-stat">
+                <span class="cta-stat-value">۵۰۰+</span>
+                <span class="cta-stat-label">دانشجو</span>
+              </div>
+              <div class="cta-stat">
+                <span class="cta-stat-value">۳۰M+</span>
+                <span class="cta-stat-label">تومان جایزه</span>
+              </div>
+              <div class="cta-stat">
+                <span class="cta-stat-value">۵</span>
+                <span class="cta-stat-label">ساعت رقابت</span>
+              </div>
+            </div>
+            <div class="cta-actions">
+              <a class="btn btn-primary btn-lg" href="signup.html">
+                شروع ثبت‌نام
+              </a>
+              <a class="btn btn-secondary" href="login.html">ورود</a>
+              <a class="btn btn-ghost" href="#rules">مطالعه قوانین</a>
+            </div>
+            <div class="cta-cards">
+              <article class="cta-card">
+                <h3 class="card-title">تجربه عملی</h3>
+                <p class="card-text">
+                  بهترین فرصت برای تمرین و آمادگی برای مسابقات ملی
+                </p>
+              </article>
+              <article class="cta-card">
+                <h3 class="card-title">یادگیری تیمی</h3>
+                <p class="card-text">
+                  کار گروهی و همفکری با بهترین برنامه‌نویس‌ها
+                </p>
+              </article>
+              <article class="cta-card">
+                <h3 class="card-title">رزومه‌سازی</h3>
+                <p class="card-text">
+                  گواهینامه معتبر برای تقویت رزومه تحصیلی و شغلی
+                </p>
+              </article>
+            </div>
+            <p class="cta-deadline">
+              <svg
+                class="icon icon-sm"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"
+                />
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
+              </svg>
+              مهلت ثبت‌نام: تا ۱۵ آذر ۱۴۰۴ - ظرفیت محدود است
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============ Footer / contact (contact lives only here, G4) ============ -->
+    <footer class="footer" id="contact">
+      <div class="footer-inner">
+        <div class="footer-contact">
+          <h2 class="footer-heading">تماس با ما</h2>
+          <p class="footer-text">برای اطللاعات بيشتر با ما در ارتباط باشید</p>
+          <ul class="contact-links">
+            <li>
+              <a class="contact-link" href="mailto:Elmocpc@outlook.com">
+                <span class="contact-label">
+                  <svg
+                    class="icon icon-sm"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect width="20" height="16" x="2" y="4" rx="2" />
+                    <path
+                      d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+                    />
+                  </svg>
+                  ایمیل
+                </span>
+                <span class="contact-value">Elmocpc@outlook.com</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="contact-link"
+                href="https://t.me/iustacm"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="contact-label">
+                  <svg
+                    class="icon icon-sm"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m22 2-7 20-4-9-9-4Z" />
+                    <path d="M22 2 11 13" />
+                  </svg>
+                  تلگرام
+                </span>
+                <span class="contact-value">t.me/iustacm</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="contact-link"
+                href="https://instagram.com/cesa_iust"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="contact-label">
+                  <svg
+                    class="icon icon-sm"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                    <path
+                      d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"
+                    />
+                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                  </svg>
+                  اینستاگرام
+                </span>
+                <span class="contact-value">instagram.com/cesa_iust</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="footer-logos">
+          <img
+            class="footer-logo"
+            src="../../src/assets/CESA.svg"
+            alt="CESA"
+          />
+          <img
+            class="footer-logo"
+            src="../../src/assets/UNi.png"
+            alt="UNI"
+          />
+          <img
+            class="footer-logo"
+            src="../../src/assets/yektanet.svg"
+            alt="Extra Logo"
+          />
+          <img
+            class="footer-logo"
+            src="../../src/assets/ELMOCPC.svg"
+            alt="ELMOCPC"
+          />
+        </div>
+
+        <div class="footer-copy">
+          <p>ELMOCPC 2025 © - تمامی حقوق محفوظ است</p>
+          <p>ELMOCPC - Computer Engineering Scientific Associate</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -74,7 +74,7 @@ const DesktopMenu = ({
             </Button>
             <Button
               onClick={onRegister}
-              className="bg-[#FFD500] hover:bg-[#e6c200] text-[#00274D] font-semibold px-6 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-[#FFD500]/50"
+              className="bg-[#FFD500] hover:bg-[#e6c200] text-[#e7f0fa] font-semibold px-6 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-[#FFD500]/50"
             >
               ثبت‌نام
             </Button>

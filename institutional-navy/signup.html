@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="پنجمین دوره مسابقات برنامه‌نویسی دانشجویی دانشگاه علم و صنعت — ELMOCPC 2025"
+    />
+    <title>ELMOCPC 2025 — ثبت‌نام</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Auth shell (G5): centered card over BG.png, corner logos, no global nav -->
+    <main class="auth-page">
+      <section class="auth-card" aria-labelledby="signup-title">
+        <header class="form-header">
+          <h1 class="form-title" id="signup-title">
+            لطفا اطلاعات خود را وارد کنید
+          </h1>
+        </header>
+
+        <form>
+          <div class="form-stack">
+            <div class="grid">
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="signup-name"
+                  name="name"
+                  type="text"
+                  placeholder=" "
+                  autocomplete="given-name"
+                />
+                <label class="fl-label" for="signup-name">نام</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="signup-family"
+                  name="family"
+                  type="text"
+                  placeholder=" "
+                  autocomplete="family-name"
+                />
+                <label class="fl-label" for="signup-family">نام خانوادگی</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="signup-email"
+                  name="email"
+                  type="email"
+                  placeholder=" "
+                  autocomplete="email"
+                />
+                <label class="fl-label" for="signup-email">ایمیل</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="signup-phone"
+                  name="phone"
+                  type="tel"
+                  placeholder=" "
+                  autocomplete="tel"
+                />
+                <label class="fl-label" for="signup-phone">شماره موبایل</label>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="signup-national-id"
+                  name="national_id"
+                  type="text"
+                  placeholder=" "
+                />
+                <label class="fl-label" for="signup-national-id">کد ملی</label>
+              </div>
+
+              <div>
+                <label class="sr-only" for="signup-tshirt">سایز تیشرت</label>
+                <span class="select">
+                  <select id="signup-tshirt" name="tshirt">
+                    <option value="" selected>سایز تیشرت را انتخاب کنید</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="XXL">XXL</option>
+                  </select>
+                  <svg
+                    class="select-chevron icon-sm"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </span>
+              </div>
+
+              <div class="fl">
+                <input
+                  class="input fl-control"
+                  id="signup-university"
+                  name="university"
+                  type="text"
+                  placeholder=" "
+                />
+                <label class="fl-label" for="signup-university">دانشگاه</label>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-yellow btn-lg btn-block" type="submit">
+                ثبت اطلاعات
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <p class="form-foot">
+          قبلا حساب کاربری داشته‌اید؟
+          <a class="link" href="login.html">وارد شوید</a>
+        </p>
+      </section>
+
+      <a href="index.html">
+        <img
+          class="corner-logo corner-logo-start"
+          src="../../src/assets/ELMOCPC.svg"
+          alt="ELMOCPC"
+        />
+      </a>
+      <img
+        class="corner-logo corner-logo-end"
+        src="../../src/assets/CESA.svg"
+        alt="CESA"
+      />
+    </main>
+  </body>
+</html>
